@@ -1,4 +1,4 @@
 package Paquete;
 
-public class Carguero extends Nave{
-}
+//public class Carguero extends Nave{
+//}

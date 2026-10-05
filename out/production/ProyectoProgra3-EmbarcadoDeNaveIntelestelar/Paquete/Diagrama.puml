@@ -1,0 +1,37 @@
+@startuml
+class Nave{
+	- int combustible
+	- int energia
+	- int desgaste
+	- Tripulante tripulacion[]
+
+}
+
+
+Nave o--Tripulante
+Nave *-- Misiones
+Nave *--Bitacora
+Nave *-- Asistente
+Nave *-- MotorWarp
+class Tripulante{
+	- String cargo
+	- String origen
+	- String antiguedad
+	- String nombre
+}
+class Bitacora{}
+
+class MotorWarp {}
+MotorWarp <|.. Warp
+interface Warp{}
+
+
+class Misiones{}
+
+class Sistema{}
+Sistema *-- Nave
+Sistema *-- Tripulante
+
+class Asistente{}
+
+@enduml

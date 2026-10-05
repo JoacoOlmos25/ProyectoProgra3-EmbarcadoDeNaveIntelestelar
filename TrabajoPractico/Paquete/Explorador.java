@@ -1,4 +1,4 @@
 package Paquete;
 
-public class Explorador extends Nave{
-}
+//public class Explorador extends Nave{
+//}

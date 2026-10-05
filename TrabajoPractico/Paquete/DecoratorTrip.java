@@ -2,7 +2,7 @@ package Paquete;
 
 public abstract class DecoratorTrip extends Tripulante {
 
-    public DecoratorTrip(int antiguedad, String ident) {
+    public DecoratorTrip(int antiguedad, String ident) throws AntiguedadNegativa {
         super(antiguedad, ident);
     }
 

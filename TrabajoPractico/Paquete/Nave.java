@@ -27,14 +27,14 @@ public abstract class Nave {
         if (this.requiereMantenimiento){
             this.desgaste = 0;
             this.requiereMantenimiento = false;
-        }else
-            throw new mantenimientoException();//la desarrollo en un paquete aparte
+        }//else
+            //throw new mantenimientoException();//la desarrollo en un paquete aparte
     }
 
     public void incrementaDesgaste(int cant){
         int aux;
         if ((this.desgaste + cant) > 100){
-            throw new excesoDesgaste();
+            //throw new excesoDesgaste();
         }else{
             this.desgaste += cant;
             if (this.desgaste >= 80)

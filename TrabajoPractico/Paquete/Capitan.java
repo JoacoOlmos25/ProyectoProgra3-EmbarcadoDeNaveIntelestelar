@@ -4,7 +4,7 @@ public class Capitan extends Tripulante {
 
     private final double base=1000;
 
-    public Capitan(int antiguedad, String ident) {
+    public Capitan(int antiguedad, String ident) throws AntiguedadNegativa {
         super(antiguedad, ident);
     }
 
@@ -18,7 +18,6 @@ public class Capitan extends Tripulante {
        return "Tripulante{" +
                "ident='" + ident + '\'' +
                ", antiguedad=" + antiguedad +
-               ", remuneracion total=" + getRemu() +
                ", desgloce: Cargo= Capitan, remuneracion base=" + base +
                ", adicional por antiguedad=" + base*0.2*antiguedad;
     }
