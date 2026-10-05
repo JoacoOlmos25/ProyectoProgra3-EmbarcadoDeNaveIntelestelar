@@ -4,7 +4,7 @@ public class Alferez extends Tripulante{
 
     private final double base=200;
 
-    public Alferez(int antiguedad, String ident) {
+    public Alferez(int antiguedad, String ident) throws AntiguedadNegativa {
         super(antiguedad, ident);
     }
 

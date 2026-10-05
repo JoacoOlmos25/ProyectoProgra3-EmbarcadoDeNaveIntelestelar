@@ -1,6 +1,6 @@
 package Paquete;
 
-public class Excepciones extends RuntimeException{
+public class AntiguedadNegativa extends Exception{
 
     public AntiguedadNegativa(){
         super("No se puede tener una antiguedad negativa");

@@ -4,7 +4,7 @@ public class Teniente extends Tripulante{
 
     private final double base=400;
 
-    public Teniente(int antiguedad, String ident) {
+        public Teniente(int antiguedad, String ident) throws AntiguedadNegativa {
         super(antiguedad, ident);
     }
 

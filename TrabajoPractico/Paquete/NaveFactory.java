@@ -1,4 +1,4 @@
 package Paquete;
 
-public class NaveFactory extends Nave{
-}
+//public class NaveFactory extends Nave{
+//}

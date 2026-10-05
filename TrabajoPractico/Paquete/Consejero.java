@@ -4,7 +4,7 @@ public class Consejero extends Tripulante{
     //Deberia agregar la variable base como final?
     private final double base=600;
 
-    public Consejero(int antiguedad, String ident) {
+    public Consejero(int antiguedad, String ident) throws AntiguedadNegativa {
         super(antiguedad, ident);
     }
 
