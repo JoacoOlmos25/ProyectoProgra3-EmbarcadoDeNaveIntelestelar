@@ -12,4 +12,14 @@ public class Alferez extends Tripulante{
     public double getRemu() {
         return base + antiguedad*0.005*base;
     }
+
+    @Override
+    public String toString() {
+        return "Tripulante{" +
+                "ident='" + ident + '\'' +
+                ", antiguedad=" + antiguedad +
+                ", remuneracion total=" + getRemu() +
+                ", desgloce: Cargo= Alferez, remuneracion base=" + base +
+                ", adicional por antiguedad=" + base*0.005*antiguedad;
+    }
 }

@@ -11,4 +11,9 @@ public class Vulcano extends DecoratorTrip{
     public double getRemu(){
         return getRemu()+30;
     }
+
+    @Override
+    public String toString() {
+        return tripu.toString() + ", origen= Vulcano, subsidio mensual=" + 30 + '}';
+    }
 }

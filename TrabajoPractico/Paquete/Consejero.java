@@ -14,4 +14,14 @@ public class Consejero extends Tripulante{
     }
 
     //Agregar 2 PG por cada consejo registrado(NI puta idea pero hay q hacerlo)
+
+    @Override
+    public String toString() {
+        return "Tripulante{" +
+                "ident='" + ident + '\'' +
+                ", antiguedad=" + antiguedad +
+                ", remuneracion total=" + getRemu() +
+                ", desgloce: Cargo= Consejero, remuneracion base=" + base +
+                ", adicional por antiguedad=" + base*0.05*antiguedad;
+    }
 }

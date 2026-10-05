@@ -11,4 +11,9 @@ public class Terricola extends DecoratorTrip{
     public double getRemu(){
         return getRemu()+20;
     }
+
+    @Override
+    public String toString() {
+        return tripu.toString() + ", origen= Terricola, subsidio mensual=" + 20 + '}';
+    }
 }

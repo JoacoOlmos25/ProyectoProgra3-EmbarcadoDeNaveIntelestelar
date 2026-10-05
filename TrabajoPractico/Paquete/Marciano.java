@@ -11,4 +11,9 @@ public class Marciano extends DecoratorTrip{
     public double getRemu(){
         return getRemu()+18;
     }
+
+    @Override
+    public String toString() {
+        return tripu.toString() + ", origen= Marciano, subsidio mensual=" + 18 + '}';
+    }
 }

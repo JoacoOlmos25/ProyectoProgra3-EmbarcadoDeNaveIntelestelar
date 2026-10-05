@@ -1,7 +1,12 @@
 package Paquete;
 
 public abstract class DecoratorTrip extends Tripulante {
-    private Tripulante tripulante;
+
+    public DecoratorTrip(int antiguedad, String ident) {
+        super(antiguedad, ident);
+    }
 
     public abstract double getRemu();
+
+    public abstract String toString();
 }
