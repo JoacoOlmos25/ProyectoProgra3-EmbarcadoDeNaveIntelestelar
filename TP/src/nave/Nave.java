@@ -65,7 +65,7 @@ public abstract class Nave {
     public void incrementaDesgaste(int cant){
         int aux;
         if ((this.desgaste + cant) > 100){
-            throw new ExcesoDesgaste("Desgaste por encima de lo que se va a usar");
+            throw new ExcesoDesgasteException("Desgaste por encima de lo que se va a usar");
         }else{
             this.desgaste += cant;
             if (this.desgaste >= 80)
@@ -88,14 +88,14 @@ public abstract class Nave {
 
     public void cargaCombustible(int cant){
         if ((this.combustible + cant) > capMaxCombustible){
-            throw new ExcesoRecurso("Se escede de la capacidad maxima");
+            throw new ExcesoRecursoException("Se escede de la capacidad maxima");
         }
         this.combustible += cant ;
     }
 
     public void cargaEnergia(int cant){
         if ((this.energia + cant) > capMaxEnergia){
-            throw new ExcesoRecurso("Se escede de la capacidad maxima");
+            throw new ExcesoRecursoException("Se escede de la capacidad maxima");
         }
         this.energia += cant ;
     }
