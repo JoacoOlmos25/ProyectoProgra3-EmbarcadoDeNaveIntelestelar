@@ -5,9 +5,8 @@ public abstract class Tripulante {
     protected String ident;
     protected int antiguedad;
 
-    public Tripulante(int antiguedad, String ident) throws AntiguedadNegativa {
-        setAntiguedad(antiguedad);
-        this.ident = ident;
+    public Tripulante(){
+        super();
     }
 
     @Override
@@ -15,9 +14,7 @@ public abstract class Tripulante {
 
     public abstract double getRemu();
 
-    public String getIdent() {
-        return ident;
-    }
+    public String getIdent(){ return ident; }
 
     public int getAntiguedad() {
         return antiguedad;

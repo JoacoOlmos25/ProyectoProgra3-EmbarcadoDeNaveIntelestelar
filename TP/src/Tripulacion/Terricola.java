@@ -3,8 +3,8 @@ package src.Tripulacion;
 public class Terricola extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Terricola(Tripulante tripu)throws AntiguedadNegativa {
-        super(tripu.antiguedad, tripu.ident);
+    public Terricola(Tripulante tripu){
+        super();
         this.tripu = tripu;
     }
 

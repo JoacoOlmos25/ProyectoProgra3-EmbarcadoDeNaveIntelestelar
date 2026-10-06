@@ -5,7 +5,9 @@ public class Consejero extends Tripulante {
     private final double base=600;
 
     public Consejero(int antiguedad, String ident) throws AntiguedadNegativa {
-        super(antiguedad, ident);
+        super();
+        setAntiguedad(antiguedad);
+        this.ident = ident;
     }
 
     @Override

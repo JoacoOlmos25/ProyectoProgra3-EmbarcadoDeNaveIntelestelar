@@ -3,8 +3,8 @@ package src.Tripulacion;
 public class Marciano extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Marciano(Tripulante tripu) throws AntiguedadNegativa {
-        super(tripu.antiguedad, tripu.ident);
+    public Marciano(Tripulante tripu){
+        super();
         this.tripu = tripu;
     }
 

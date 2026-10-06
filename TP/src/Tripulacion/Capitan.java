@@ -5,7 +5,9 @@ public class Capitan extends Tripulante {
     private final double base=1000;
 
     public Capitan(int antiguedad, String ident) throws AntiguedadNegativa {
-        super(antiguedad, ident);
+        super();
+        setAntiguedad(antiguedad);
+        this.ident = ident;
     }
 
     @Override

@@ -5,7 +5,9 @@ public class Alferez extends Tripulante {
     private final double base=200;
 
     public Alferez(int antiguedad, String ident) throws AntiguedadNegativa {
-        super(antiguedad, ident);
+        super();
+        setAntiguedad(antiguedad);
+        this.ident = ident;
     }
 
     @Override

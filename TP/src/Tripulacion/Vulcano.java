@@ -3,8 +3,8 @@ package src.Tripulacion;
 public class Vulcano extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Vulcano(Tripulante tripu)throws AntiguedadNegativa {
-        super(tripu.antiguedad, tripu.ident);
+    public Vulcano(Tripulante tripu){
+        super();
         this.tripu = tripu;
     }
 
