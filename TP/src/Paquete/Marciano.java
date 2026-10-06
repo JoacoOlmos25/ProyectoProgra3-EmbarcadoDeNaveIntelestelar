@@ -1,4 +1,4 @@
-package Paquete;
+package src.Paquete;
 
 public class Marciano extends DecoratorTrip{
     private Tripulante tripu;

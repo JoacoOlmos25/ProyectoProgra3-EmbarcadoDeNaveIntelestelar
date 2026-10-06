@@ -1,4 +1,4 @@
-package Paquete;
+package src.Paquete;
 
 public class Prueba {
     public static void main(String[] args) throws AntiguedadNegativa {

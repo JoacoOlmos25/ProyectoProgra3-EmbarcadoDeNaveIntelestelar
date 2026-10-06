@@ -1,4 +1,4 @@
-package Paquete;
+package src.Paquete;
 
 public abstract class DecoratorTrip extends Tripulante {
 

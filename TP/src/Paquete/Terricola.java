@@ -1,4 +1,4 @@
-package Paquete;
+package src.Paquete;
 
 public class Terricola extends DecoratorTrip{
     private Tripulante tripu;
