@@ -1,6 +1,10 @@
 package src.Paquete;
 
 import src.AC.Bitacora;
+import src.Tripulacion.AntiguedadNegativa;
+import src.Tripulacion.Capitan;
+import src.Tripulacion.Tripulante;
+import src.Tripulacion.Vulcano;
 
 import java.time.LocalDateTime;
 

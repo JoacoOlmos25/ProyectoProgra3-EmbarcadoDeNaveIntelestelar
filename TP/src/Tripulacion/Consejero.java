@@ -1,6 +1,6 @@
-package src.Paquete;
+package src.Tripulacion;
 
-public class Consejero extends Tripulante{
+public class Consejero extends Tripulante {
     //Deberia agregar la variable base como final?
     private final double base=600;
 

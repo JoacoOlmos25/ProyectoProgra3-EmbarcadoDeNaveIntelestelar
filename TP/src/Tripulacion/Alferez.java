@@ -1,6 +1,6 @@
-package src.Paquete;
+package src.Tripulacion;
 
-public class Alferez extends Tripulante{
+public class Alferez extends Tripulante {
 
     private final double base=200;
 

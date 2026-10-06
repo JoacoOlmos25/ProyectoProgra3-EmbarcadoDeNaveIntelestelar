@@ -1,9 +1,9 @@
-package src.Paquete;
+package src.Tripulacion;
 
-public class Terricola extends DecoratorTrip{
+public class Terricola extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Terricola(Tripulante tripu)throws AntiguedadNegativa{
+    public Terricola(Tripulante tripu)throws AntiguedadNegativa {
         super(tripu.antiguedad, tripu.ident);
         this.tripu = tripu;
     }

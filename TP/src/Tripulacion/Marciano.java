@@ -1,9 +1,9 @@
-package src.Paquete;
+package src.Tripulacion;
 
-public class Marciano extends DecoratorTrip{
+public class Marciano extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Marciano(Tripulante tripu) throws AntiguedadNegativa{
+    public Marciano(Tripulante tripu) throws AntiguedadNegativa {
         super(tripu.antiguedad, tripu.ident);
         this.tripu = tripu;
     }

@@ -1,11 +1,11 @@
-package src.Paquete;
+package src.Tripulacion;
 
 public class Teniente extends Tripulante{
 
     private final double base=400;
 
         public Teniente(int antiguedad, String ident) throws AntiguedadNegativa {
-        super(antiguedad, ident);
+            super(antiguedad, ident);
     }
 
     @Override

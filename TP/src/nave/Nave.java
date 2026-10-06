@@ -1,5 +1,5 @@
 package src.nave;
-import src.Paquete.Tripulante;
+import src.Tripulacion.Tripulante;
 
 import java.util.ArrayList;
 

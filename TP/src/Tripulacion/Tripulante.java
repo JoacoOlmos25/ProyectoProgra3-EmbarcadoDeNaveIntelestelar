@@ -1,12 +1,11 @@
-package src.Paquete;
-
+package src.Tripulacion;
 
 
 public abstract class Tripulante {
     protected String ident;
     protected int antiguedad;
 
-    public Tripulante(int antiguedad, String ident) throws AntiguedadNegativa{
+    public Tripulante(int antiguedad, String ident) throws AntiguedadNegativa {
         setAntiguedad(antiguedad);
         this.ident = ident;
     }

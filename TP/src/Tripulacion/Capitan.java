@@ -1,4 +1,4 @@
-package src.Paquete;
+package src.Tripulacion;
 
 public class Capitan extends Tripulante {
 

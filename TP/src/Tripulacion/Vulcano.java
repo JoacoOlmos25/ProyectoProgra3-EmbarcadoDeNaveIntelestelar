@@ -1,9 +1,9 @@
-package src.Paquete;
+package src.Tripulacion;
 
-public class Vulcano extends DecoratorTrip{
+public class Vulcano extends DecoratorTrip {
     private Tripulante tripu;
 
-    public Vulcano(Tripulante tripu)throws AntiguedadNegativa{
+    public Vulcano(Tripulante tripu)throws AntiguedadNegativa {
         super(tripu.antiguedad, tripu.ident);
         this.tripu = tripu;
     }
