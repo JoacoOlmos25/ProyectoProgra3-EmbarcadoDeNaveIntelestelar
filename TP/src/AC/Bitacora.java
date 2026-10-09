@@ -23,7 +23,5 @@ public class Bitacora {
               System.out.println( bitacora.get(i).toString());
             }
         }
-
-
     };
 }
