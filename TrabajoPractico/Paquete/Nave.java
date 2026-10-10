@@ -1,8 +1,10 @@
 package Paquete;
 
+import Paquete.MotorWarp.MotorWarp;
+
 import java.util.ArrayList;
 
-public abstract class Nave {
+public abstract class Nave implements IRecursos {
     //constantes de nave
     private final int capMaxCombustible = 100;
     private final int capMaxEnergia = 100;
@@ -14,6 +16,7 @@ public abstract class Nave {
     protected ArrayList <Tripulante> tripulacion = new ArrayList<>();
 
     //motor warp
+    private MotorWarp motorWarp;
 
     public Nave(int combInicial,int eInicial,int desInicial) {
         this.combustible = combInicial;
@@ -42,4 +45,50 @@ public abstract class Nave {
         }
     }
 
+    //Implementación de interface IRecursos
+
+    public int getCombustible(){
+        return this.combustible;
+    }
+
+    public void cargarCombustible(int combustible) {
+
+        if (this.combustible + combustible > this.capMaxCombustible) {
+            throw new recursosException("Exceso de combustible");
+        }
+
+        this.combustible += combustible;
+    }
+
+    public void consumirCombustible(int combustible) {
+        if (this.combustible - combustible < this.capMaxCombustible) {
+            throw new recursosException("Combustible insuficiente");
+        }
+
+        this.combustible -= combustible;
+    }
+
+    public int getEnergia(){
+        return this.energia;
+    }
+
+    public void cargarEnergia(int energia) {
+        if (this.energia + energia > this.capMaxEnergia) {
+            throw new recursosException("Exceso de energía");
+        }
+
+        this.energia += energia;
+    }
+
+    public void consumirEnergia(int energia) {
+        if (this.energia - energia < this.capMaxEnergia) {
+            throw new recursosException("Energía insuficiente");
+        }
+
+        this.energia -= energia;
+    }
+
+    public void ejecutarSaltoWarp() throws recursosException {
+
+    }
 }
