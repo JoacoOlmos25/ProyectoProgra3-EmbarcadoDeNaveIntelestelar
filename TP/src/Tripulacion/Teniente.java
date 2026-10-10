@@ -1,5 +1,12 @@
 package src.Tripulacion;
-
+/**
+ * Representa a un tripulante con el rol de Teniente.
+ *
+ * Invariante de clase:
+ * - precioBase > 0
+ * - antiguedad >= 0
+ * - indent != "" && ident != null
+ */
 public class Teniente extends Tripulante{
 
     private final double base=400;
@@ -9,7 +16,18 @@ public class Teniente extends Tripulante{
         setAntiguedad(antiguedad);
         this.ident = ident;
     }
-
+    /**
+     * Calcula la remuneracion correspondiente del Alferez.
+     *
+     * Precondición:
+     * - Ninguna adicional (los datos ya están garantizados por el invariante de la clase).
+     *
+     * Postcondición:
+     * - Retorna: precioBase + (precioBase * 0.03 * antiguedad)
+     * - El valor retornado es estrictamente > 0.
+     *
+     * @return double que representa el salario final calculado.
+     */
     @Override
     public double getRemu() {
         return base + antiguedad*0.03*base;

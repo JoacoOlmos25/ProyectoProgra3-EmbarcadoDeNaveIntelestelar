@@ -1,5 +1,9 @@
 package src.Tripulacion;
-
+/**
+ * Representa la clase abstracta base Tripulante.
+ * la cual heredan las clases concretas con los diferentes roles
+ * y las clases decoradoras como los origenes del tripulante
+ */
 
 public abstract class Tripulante {
     protected String ident;
