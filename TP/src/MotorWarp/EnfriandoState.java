@@ -10,27 +10,27 @@ public class EnfriandoState implements MotorState {
 
 
     @Override
-    public void prepararSalto() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Motor enfriándose: todavía no se puede utilizar");
+    public void prepararSalto() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Motor enfriándose: todavía no se puede utilizar");
     }
 
     @Override
-    public void saltar() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Motor enfriándose: todavía no se puede utilizar");
+    public void saltar() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Motor enfriándose: todavía no se puede utilizar");
     }
 
     @Override
-    public void enfriar() {
-        //idempotente
+    public void finalizarSalto() throws TransicionRedundanteException {
+        throw new TransicionRedundanteException("Salto ya finalizado, enfriamiento ya en curso");
     }
 
     @Override
-    public void hacerDisponible() throws EstadoMotorInvalidoException {
+    public void hacerDisponible() throws TransicionInvalidaException {
         motorWarp.setEstado(new DisponibleState(motorWarp));
     }
 
     @Override
-    public void cancelarSalto() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Motor enfriándose: no se puede cancelar la acción");
+    public void cancelarSalto() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Motor enfriándose: no se puede cancelar la acción");
     }
 }
