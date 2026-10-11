@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Bitacora {
 
-    public ArrayList<Evento> bitacora = new ArrayList<>();
+    public static ArrayList<Evento> bitacora = new ArrayList<>();
 
     public Bitacora(){};
 
-    public void agregaEvento(LocalDateTime t, String titulo,String msj ) {
+    public static void agregaEvento(LocalDateTime t, String titulo, String msj) {
        Evento evento = new Evento(t,titulo,msj);
        bitacora.add(evento);
     }

@@ -1,8 +1,16 @@
 package src.MotorWarp;
 
+import src.AC.Bitacora;
+
+import java.time.LocalDateTime;
+
 public class MotorWarp {
 
-    private MotorState estado = new DisponibleState(this);
+    private MotorState estado;
+
+    public MotorWarp() {
+        this.estado = new DisponibleState(this);
+    }
 
     public void setEstado(MotorState estado) {
         this.estado = estado;

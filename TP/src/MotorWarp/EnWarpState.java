@@ -1,11 +1,16 @@
 package src.MotorWarp;
 
+import src.AC.Bitacora;
+
+import java.time.LocalDateTime;
+
 public class EnWarpState implements MotorState {
 
     private MotorWarp motorWarp;
 
     public EnWarpState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
+        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp esta activo y en curso");
     }
 
     @Override
@@ -31,5 +36,6 @@ public class EnWarpState implements MotorState {
     @Override
     public void cancelarSalto() {
         motorWarp.setEstado(new DisponibleState(motorWarp));
+        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp");
     }
 }

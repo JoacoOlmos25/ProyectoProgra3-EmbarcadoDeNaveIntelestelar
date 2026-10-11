@@ -1,11 +1,16 @@
 package src.MotorWarp;
 
+import src.AC.Bitacora;
+
+import java.time.LocalDateTime;
+
 public class PreparandoState implements MotorState {
 
     private MotorWarp motorWarp;
 
     public PreparandoState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
+        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp se esta Preparando para el salto");
     }
 
     @Override
@@ -31,5 +36,6 @@ public class PreparandoState implements MotorState {
     @Override
     public void cancelarSalto() throws TransicionInvalidaException {
         motorWarp.setEstado(new DisponibleState(motorWarp));
+        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp, al estar en Preparacion vuelve a Disponible");
     }
 }

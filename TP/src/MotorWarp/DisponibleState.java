@@ -1,11 +1,16 @@
 package src.MotorWarp;
 
+import src.AC.Bitacora;
+
+import java.time.LocalDateTime;
+
 public class DisponibleState implements MotorState {
 
     private MotorWarp motorWarp;
 
     public DisponibleState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
+        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp esta disponible y en espera");
     }
 
     @Override
