@@ -1,8 +1,25 @@
 package src.Misiones;
 //Recolección en un punto de interés
 
+import src.AC.Asistente;
+
 public class Mision_02 extends Mision{
-    public Mision_02(int combustible, int energia, int desgaste) {
-        super(combustible, energia, desgaste);
+    public Mision_02(int combustible, int energia, int desgaste, Asistente ac) {
+        super(combustible, energia, desgaste, ac);
+    }
+
+    @Override
+    protected void ejecutar() {
+        System.out.println("Ejecutando Mision_02");
+    }
+
+    @Override
+    protected void evaluarResultado() {
+
+    }
+
+    @Override
+    protected void cerrar() {
+
     }
 }

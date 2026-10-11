@@ -1,5 +1,4 @@
 package src.nave;
-import src.MotorWarp.DisponibleState;
 import src.MotorWarp.MotorWarp;
 import src.Tripulacion.Tripulante;
 
@@ -86,13 +85,31 @@ public abstract class Nave {
             *Devuelve la nave en perfecto estado
      */
 
-    public void mantenimiento(){
+    public void realizaMantenimiento(){
 
         if (this.requiereMantenimiento){
             this.desgaste = 0;
             this.requiereMantenimiento = false;
         }else
             throw new MantenimientoException("La nave no necesita mantenimiento");//la aparte
+    }
+
+
+    /**
+     * Evalúa si la nave requiere mantenimiento según los límites de desgaste establecidos
+     * @return true si la nave necesita mantenimiento, falso en caso contrario
+     */
+    public boolean consultaReqMantenimiento(){
+        return this.requiereMantenimiento;
+    }
+
+
+    /**
+     * Consulta si el motor Warp está disponible
+     * @return true si el motor está disponible
+     */
+    public boolean consultaMotorDisponible(){
+        return motorWarp.consultaMotorDisponible();
     }
 
     /**Contrato

@@ -38,4 +38,10 @@ public class EnfriandoState implements MotorState {
     public void cancelarSalto() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Motor enfriándose: no se puede cancelar la acción");
     }
+
+    @Override
+    public boolean motorDisponible() {
+        return false;
+    }
+
 }

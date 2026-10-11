@@ -36,4 +36,11 @@ public interface MotorState {
      * @throws MotorException si el estado inicial del motor no es "En Warp"
      */
     void cancelarSalto() throws MotorException;
+
+
+    /**
+     * Verifica si el motor Warp está disponible
+     * @return boolean, true si está disponible, false en caso contrario
+     */
+    boolean motorDisponible();
 }

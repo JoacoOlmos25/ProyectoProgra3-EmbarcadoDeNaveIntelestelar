@@ -38,4 +38,10 @@ public class PreparandoState implements MotorState {
         motorWarp.setEstado(new DisponibleState(motorWarp));
         Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp, al estar en Preparacion vuelve a Disponible");
     }
+
+    @Override
+    public boolean motorDisponible() {
+        return false;
+    }
+
 }
