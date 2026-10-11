@@ -1,0 +1,93 @@
+@startuml
+class src.Tripulacion.Teniente {
+- double base
++ <<Create>> Teniente(int,String)
++ double getRemu()
++ String toString()
+}
+
+
+class src.Tripulacion.AntiguedadNegativa {
++ <<Create>> AntiguedadNegativa()
+}
+
+class src.Tripulacion.Terricola {
+- Tripulante tripu
++ <<Create>> Terricola(Tripulante)
++ double getRemu()
++ String toString()
+}
+
+
+class src.Tripulacion.Alferez {
+- double base
++ <<Create>> Alferez(int,String)
++ double getRemu()
++ String toString()
+}
+
+
+class src.Tripulacion.Marciano {
+- Tripulante tripu
++ <<Create>> Marciano(Tripulante)
++ double getRemu()
++ String toString()
+}
+
+
+class src.Tripulacion.Capitan {
+- double base
++ <<Create>> Capitan(int,String)
++ double getRemu()
++ String toString()
+}
+
+
+abstract class src.Tripulacion.DecoratorTrip {
++ <<Create>> DecoratorTrip()
++ {abstract}double getRemu()
++ {abstract}String toString()
+}
+
+class src.Tripulacion.Consejero {
+- double base
+- int cantConsejos
++ <<Create>> Consejero(int,String)
++ double getRemu()
++ void nuevoConsejos()
++ String toString()
+}
+
+
+class src.Tripulacion.Vulcano {
+- Tripulante tripu
++ <<Create>> Vulcano(Tripulante)
++ double getRemu()
++ String toString()
+}
+
+
+abstract class src.Tripulacion.Tripulante {
+# String ident
+# int antiguedad
++ <<Create>> Tripulante()
++ {abstract}String toString()
++ {abstract}double getRemu()
++ String getIdent()
++ int getAntiguedad()
++ void setAntiguedad(int)
+}
+
+
+
+
+src.Tripulacion.Tripulante <|-- src.Tripulacion.Teniente
+src.Tripulacion.Exception <|-- src.Tripulacion.AntiguedadNegativa
+src.Tripulacion.DecoratorTrip <|-- src.Tripulacion.Terricola
+src.Tripulacion.Tripulante <|-- src.Tripulacion.Alferez
+src.Tripulacion.DecoratorTrip <|-- src.Tripulacion.Marciano
+src.Tripulacion.Tripulante <|-- src.Tripulacion.Capitan
+src.Tripulacion.Tripulante <|-- src.Tripulacion.DecoratorTrip
+src.Tripulacion.Tripulante <|-- src.Tripulacion.Consejero
+src.Tripulacion.DecoratorTrip <|-- src.Tripulacion.Vulcano
+@enduml
