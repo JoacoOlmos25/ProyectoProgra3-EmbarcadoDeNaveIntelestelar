@@ -21,5 +21,4 @@ public class NaveFactory{
                 throw new IllegalArgumentException("Tipo de nave desconocido: " + tipo);
         }
     }
-
 }
