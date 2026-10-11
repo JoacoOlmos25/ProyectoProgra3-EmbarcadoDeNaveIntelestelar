@@ -1,7 +1,10 @@
 package src.AC;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
+/**
+ * Clase Bitacora, esta guardara en un array la lista de los eventos creados
+ * permitira la agregacion de los eventos a la lista y mostrar el listado en su totalidad por consola.
+ * **/
 public class Bitacora {
 
     public static ArrayList<Evento> bitacora = new ArrayList<>();

@@ -15,8 +15,7 @@ public abstract class Mision {
         this.desgaste = desgaste;
     }
 
-    @override
     public String toString() {
-    return "Mision{Combustible necesario=" + combNecesario +", Energia necesaria=" + energiaNecesaria +", Desgaste=" + desgaste + '}';
+        return "Mision{Combustible necesario=" + combNecesario +", Energia necesaria=" + energiaNecesaria +", Desgaste=" + desgaste + '}';
     }
 }
