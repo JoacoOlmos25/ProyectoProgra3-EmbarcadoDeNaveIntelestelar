@@ -37,4 +37,9 @@ public class DisponibleState implements MotorState {
     public void cancelarSalto() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Cancelación de salto inválida: no se está ejecutando un salto");
     }
+
+    @Override
+    public boolean motorDisponible() {
+        return true;
+    }
 }

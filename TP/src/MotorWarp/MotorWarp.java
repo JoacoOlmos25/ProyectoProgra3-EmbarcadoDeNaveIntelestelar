@@ -26,4 +26,8 @@ public class MotorWarp {
     public void cancelarSalto() throws MotorException {
         estado.cancelarSalto();
     } //qué pasa con el combustible si se cancela el salto?
+
+    public boolean consultaMotorDisponible(){
+        return estado.motorDisponible();
+    }
 }
