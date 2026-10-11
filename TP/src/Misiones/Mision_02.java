@@ -15,11 +15,11 @@ public class Mision_02 extends Mision{
 
     @Override
     protected void evaluarResultado() {
-
+        System.out.println("Mision_02 ejectuada exitosamente");
     }
 
     @Override
     protected void cerrar() {
-
+        System.out.println(" Mision_02 cerrada");
     }
 }

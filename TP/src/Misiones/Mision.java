@@ -37,7 +37,7 @@ public abstract class Mision {
 
     @Override
     public String toString() {
-        return "Mision{Combustible necesario=" + combNecesario +", Energia necesaria=" + energiaNecesaria +", Desgaste=" + desgaste + '}';
+        return "Mision{Combustible necesario=" + combNecesario +", Energia necesaria=" + energiaNecesaria +", Desgaste=" + desgasteEsperado + '}';
     }
 
 
@@ -52,6 +52,7 @@ public abstract class Mision {
             this.ejecutar();
             this.evaluarResultado();
             this.cerrar();
+            this.informe();
             //se deberían registrar los pasos en la bitácora
         }
         catch (MisionException e){
@@ -87,4 +88,8 @@ public abstract class Mision {
      * Cierra el proceso
      */
     protected abstract void cerrar();
+
+    protected void informe(){
+        System.out.println("Informe : la mision se realizo correctamente y demas ");
+    }
 }

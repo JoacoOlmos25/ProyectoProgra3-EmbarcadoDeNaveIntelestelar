@@ -16,7 +16,7 @@ public class Bitacora {
        bitacora.add(evento);
     }
 
-    public void mostrarBitacora(){
+    public static void mostrarBitacora(){
         int i,n = bitacora.size();
 
         if (n == 0){

@@ -25,4 +25,8 @@ public class Asistente {
     public boolean consultaMotorDisp(){
         return nave.consultaMotorDisponible();
     }
+
+    public void mostrarBitacora(){
+        bitacora.mostrarBitacora();
+    }
 }

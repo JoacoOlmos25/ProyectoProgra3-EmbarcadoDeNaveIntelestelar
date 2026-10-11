@@ -38,8 +38,7 @@ public class Alferez extends Tripulante {
         return "Tripulante{" +
                 "ident='" + ident + '\'' +
                 ", antiguedad=" + antiguedad +
-                ", remuneracion total=" + getRemu() +
-                ", desgloce: Cargo= Alferez, remuneracion base=" + base +
+                ", desglose: Cargo= Alferez, remuneracion base=" + base +
                 ", adicional por antiguedad=" + base*0.005*antiguedad;
     }
 }

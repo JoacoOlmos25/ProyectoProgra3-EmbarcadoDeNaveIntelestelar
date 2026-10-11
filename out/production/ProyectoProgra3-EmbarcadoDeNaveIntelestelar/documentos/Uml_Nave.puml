@@ -1,0 +1,71 @@
+@startuml
+class src.nave.NaveFactory {
++ Nave crearNave(String)
+}
+
+class src.nave.ExcesoDesgasteException {
++ <<Create>> ExcesoDesgasteException(String)
+}
+
+class src.nave.MantenimientoException {
++ <<Create>> MantenimientoException(String)
+}
+
+class src.nave.Explorador {
++ <<Create>> Explorador()
+}
+
+class src.nave.Ataque {
++ <<Create>> Ataque()
+}
+
+class src.nave.Carguero {
++ <<Create>> Carguero()
+}
+
+class src.nave.RecursosInsuficientesException {
++ <<Create>> RecursosInsuficientesException(String)
+}
+
+class src.nave.NoexisteTripulanteException {
++ <<Create>> NoexisteTripulanteException(String)
+}
+
+abstract class src.nave.Nave {
+- int capMaxCombustible
+- int capMaxEnergia
+# boolean requiereMantenimiento
+- int combustible
+- int energia
+- int desgaste
+# ArrayList<Tripulante> tripulacion
+# MotorWarp motorWarp
++ <<Create>> Nave(int,int)
++ int getCombustible()
++ int getEnergia()
++ int getDesgaste()
++ void consumirCombustible(int)
++ void consumirEnergia(int)
++ void mantenimiento()
++ void incrementaDesgaste(int)
++ void insertarTripulante(Tripulante)
++ void cargaCombustible(int)
++ void cargaEnergia(int)
+}
+
+
+class src.nave.ExcesoRecursoException {
++ <<Create>> ExcesoRecursoException(String)
+}
+
+
+
+src.nave.RuntimeException <|-- src.nave.ExcesoDesgasteException
+src.nave.RuntimeException <|-- src.nave.MantenimientoException
+src.nave.Nave <|-- src.nave.Explorador
+src.nave.Nave <|-- src.nave.Ataque
+src.nave.Nave <|-- src.nave.Carguero
+src.nave.RuntimeException <|-- src.nave.RecursosInsuficientesException
+src.nave.RuntimeException <|-- src.nave.NoexisteTripulanteException
+src.nave.RuntimeException <|-- src.nave.ExcesoRecursoException
+@enduml

@@ -1,7 +1,9 @@
 package src.nave;
+import src.AC.Bitacora;
 import src.MotorWarp.MotorWarp;
 import src.Tripulacion.Tripulante;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public abstract class Nave {
@@ -145,6 +147,7 @@ public abstract class Nave {
         //cuadno se haga el motor warp con los estados podria poner validacion de no agregar tripulaion en pleno salto
 
         tripulacion.add(t);
+        Bitacora.agregaEvento(LocalDateTime.now(),"Se agrega un Tripulante",t.toString()+" Remuneracion total=" + t.getRemu()+"}");
     }
 
 //    Una carga de combustible o energía no podrá superar la capacidad máxima. Una operación que no pueda

@@ -38,7 +38,7 @@ public class Capitan extends Tripulante {
        return "Tripulante{" +
                "ident='" + ident + '\'' +
                ", antiguedad=" + antiguedad +
-               ", desgloce: Cargo= Capitan, remuneracion base=" + base +
+               ", desglose: Cargo= Capitan, remuneracion base=" + base +
                ", adicional por antiguedad=" + base*0.2*antiguedad;
     }
 }

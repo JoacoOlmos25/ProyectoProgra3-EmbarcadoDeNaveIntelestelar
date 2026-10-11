@@ -54,7 +54,7 @@ public class Consejero extends Tripulante {
                 "ident='" + ident + '\'' +
                 ", antiguedad=" + antiguedad +
                 ", remuneracion total=" + getRemu() +
-                ", desgloce: Cargo= Consejero, remuneracion base=" + base +
+                ", desglose: Cargo= Consejero, remuneracion base=" + base +
                 ", adicional por antiguedad=" + base*0.05*antiguedad;
     }
 }

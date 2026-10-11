@@ -13,16 +13,17 @@ public class Mision_01 extends Mision {
     @Override
     protected void ejecutar() {
         System.out.println("Ejecutando Mision_01");
+        // se deberia aca de propagar algunas de las excepciones y resolver y/o registrar en al bitacora
     }
 
     @Override
     protected void evaluarResultado() {
-
+        System.out.println("Mision_01 ejectuada exitosamente");
     }
 
     @Override
     protected void cerrar() {
-
+        System.out.println(" Mision_01 cerrada");
     }
 
 }

@@ -38,8 +38,7 @@ public class Teniente extends Tripulante{
         return "Tripulante{" +
                 "ident='" + ident + '\'' +
                 ", antiguedad=" + antiguedad +
-                ", remuneracion total=" + getRemu() +
-                ", desgloce: Cargo= Teniente, remuneracion base=" + base +
+                ", desglose: Cargo= Teniente, remuneracion base=" + base +
                 ", adicional por antiguedad=" + base*0.03*antiguedad;
     }
 }
