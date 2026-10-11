@@ -14,22 +14,22 @@ public class DisponibleState implements MotorState {
     }
 
     @Override
-    public void saltar() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("No se puede saltar sin antes preparar");
+    public void saltar() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("No se puede saltar sin antes preparar");
     }
 
     @Override
-    public void enfriar() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("No hubo salto; no se debe enfriar");
+    public void finalizarSalto() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("No hubo salto; no se debe finalizar");
     }
 
     @Override
-    public void hacerDisponible() {
-        //método idempotente; si ya está disponible, hacerlo disponible no cambia nada
+    public void hacerDisponible() throws TransicionRedundanteException {
+        throw new TransicionRedundanteException("Motor ya disponible");
     }
 
     @Override
-    public void cancelarSalto() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Cancelación de salto inválida: no se está ejecutando un salto");
+    public void cancelarSalto() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Cancelación de salto inválida: no se está ejecutando un salto");
     }
 }

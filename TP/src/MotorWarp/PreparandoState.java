@@ -9,8 +9,8 @@ public class PreparandoState implements MotorState {
     }
 
     @Override
-    public void prepararSalto() {
-        //idempotente, si ya está en preparación no pasa nada
+    public void prepararSalto() throws TransicionRedundanteException {
+        throw new TransicionRedundanteException("Preparación de salto ya en curso");
     }
 
     @Override
@@ -19,17 +19,17 @@ public class PreparandoState implements MotorState {
     }
 
     @Override
-    public void enfriar() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Preparando salto: no se puede enfriar");
+    public void finalizarSalto() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Preparando salto: no se puede finalizar");
     }
 
     @Override
-    public void hacerDisponible() throws EstadoMotorInvalidoException {
-        throw new EstadoMotorInvalidoException("Preparando salto: motor no disponible");
+    public void hacerDisponible() throws TransicionInvalidaException {
+        throw new TransicionInvalidaException("Preparando salto: motor no disponible");
     }
 
     @Override
-    public void cancelarSalto() throws EstadoMotorInvalidoException {
+    public void cancelarSalto() throws TransicionInvalidaException {
         motorWarp.setEstado(new DisponibleState(motorWarp));
     }
 }
