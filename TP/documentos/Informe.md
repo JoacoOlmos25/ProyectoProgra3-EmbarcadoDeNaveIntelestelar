@@ -32,4 +32,4 @@ Desacoplar a los clientes que solicitan naves de las clases concretas e instanci
 
 PATRÓN TEMPLATE METHOD
 
-Aplicado en la clase Mision mediante el método realizarMision(). Este define el esqueleto secuencial e inalterable del algoritmo (preparar, ejecutar, evaluarResultado, cerrar, informe), delegando la implementación concreta de los pasos intermedios a cada subclase de misión específica y centralizando la captura de excepciones y registros en la bitácora.]
+Aplicado en la clase Mision mediante el método realizarMision(). Este define el esqueleto secuencial e inalterable del algoritmo (preparar, ejecutar, evaluarResultado, cerrar, informe), delegando la implementación concreta de los pasos intermedios a cada subclase de misión específica y centralizando la captura de excepciones y registros en la bitácora.
