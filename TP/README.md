@@ -1,7 +1,6 @@
 # ProyectoProgra3-EmbarcadoDeNaveIntelestelar
-software de comando para una nave espacial tripulada utilizando el lenguaje Java y un enfoque estrictamente orientado a objetos.
 
-Proyecto realiado en IntelliJ
+Proyecto realizado en IntelliJ
 
 Con plugin instalados para el manejo y la previsualizacion de los UML
 

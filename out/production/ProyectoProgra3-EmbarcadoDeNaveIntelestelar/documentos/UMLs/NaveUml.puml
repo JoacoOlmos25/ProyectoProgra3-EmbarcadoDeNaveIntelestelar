@@ -1,0 +1,44 @@
+@startuml
+package src.nave {
+    abstract class Nave {
+        - capMaxCombustible: int = 100
+        - capMaxEnergia: int = 100
+        - combustible: int
+        - energia: int
+        - desgaste: int
+        # requiereMantenimiento: boolean
+        # tripulacion: ArrayList<Tripulante>
+        # motorWarp: MotorWarp
+        # bitacoraNave: Bitacora
+        + Nave(combInicial: int, eInicial: int)
+        + setBitacora(b: Bitacora)
+        + insertarTripulante(t: Tripulante)
+        + consumirCombustible(cantidad: int)
+        + consumirEnergia(cantidad: int)
+        + realizaMantenimiento()
+        + consultaReqMantenimiento(): boolean
+        + consultaMotorDisponible(): boolean
+        + incrementaDesgaste(cant: int)
+        + cargaCombustible(cant: int)
+        + cargaEnergia(cant: int)
+    }
+
+    class Ataque extends Nave {
+        + Ataque()
+    }
+
+    class Carguero extends Nave {
+        + Carguero()
+    }
+
+    class Explorador extends Nave {
+        + Explorador()
+    }
+
+    class NaveFactory {
+        + crearNave(tipo: String): Nave
+    }
+
+    NaveFactory ..> Nave : "Instancia"
+}
+@enduml
