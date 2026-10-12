@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class MotorWarp {
 
     private MotorState estado;
+    private Bitacora bitacora;
 
     public MotorWarp() {
         this.estado = new DisponibleState(this);
@@ -29,5 +30,15 @@ public class MotorWarp {
 
     public boolean consultaMotorDisponible(){
         return estado.motorDisponible();
+    }
+
+    public void setBitacora(Bitacora b) {
+        this.bitacora = b;
+    }
+
+    public void registrarEventoMotor(String titulo, String msj) {
+        if(this.bitacora != null) {
+            this.bitacora.agregaEvento(LocalDateTime.now(), titulo, msj);
+        }
     }
 }

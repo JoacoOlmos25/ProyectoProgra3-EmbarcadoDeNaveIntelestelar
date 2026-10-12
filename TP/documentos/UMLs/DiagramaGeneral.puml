@@ -1,0 +1,49 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam nodesep 120
+skinparam ranksep 120
+' Se quitó el linetype ortho para permitir que las líneas esquiven las cajas de los paquetes.
+
+package "Misiones" {
+    abstract class Mision
+}
+
+package "AC (Asistente)" {
+    class Asistente
+    class Bitacora
+}
+
+package "Nave" {
+    abstract class Nave
+}
+
+package "MotorWarp" {
+    class MotorWarp
+    interface MotorState <<interface>>
+}
+
+package "Tripulacion" {
+    abstract class Tripulante
+}
+
+' Relaciones jerárquicas principales (de arriba hacia abajo)
+Mision o--> Asistente : "ac"
+Asistente *-right-> Bitacora : "Crea (bitacora)"
+Asistente o--> Nave : "Coordina (nave)"
+
+Nave *--> MotorWarp : "Compone (motorWarp)"
+Nave o-right-> Tripulante : "Agrega (tripulacion)"
+MotorWarp *-right-> MotorState : "Estado actual"
+
+' Inyecciones de dependencia de la bitácora hacia arriba
+' Usamos líneas punteadas (.up.>) para que no parezcan herencia o composición
+' y el motor gráfico las dibuje limpiamente por fuera de los paquetes.
+Nave .up.> Bitacora : "Referencia inyectada"
+MotorWarp .up.> Bitacora : "Referencia inyectada"
+
+note left of Asistente
+  El Asistente es el núcleo:
+  1. Instancia la Bitácora.
+  2. La inyecta a la Nave.
+end note
+@enduml

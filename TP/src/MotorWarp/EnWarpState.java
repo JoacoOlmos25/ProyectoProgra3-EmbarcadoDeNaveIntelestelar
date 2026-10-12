@@ -10,7 +10,7 @@ public class EnWarpState implements MotorState {
 
     public EnWarpState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
-        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp esta activo y en curso");
+        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp esta activo y en curso");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class EnWarpState implements MotorState {
     @Override
     public void cancelarSalto() {
         motorWarp.setEstado(new DisponibleState(motorWarp));
-        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp");
+        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp");
     }
 
     @Override

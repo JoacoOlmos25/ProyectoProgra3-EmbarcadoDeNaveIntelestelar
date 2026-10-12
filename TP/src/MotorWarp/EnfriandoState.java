@@ -10,7 +10,7 @@ public class EnfriandoState implements MotorState {
 
     public EnfriandoState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
-        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp se esta enfriando luego de un salto");
+        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp se esta enfriando luego de un salto");
     }
 
 

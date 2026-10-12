@@ -1,0 +1,21 @@
+@startuml
+package src.Misiones {
+    abstract class Mision {
+        # combNecesario: int
+        # energiaNecesaria: int
+        # desgasteEsperado: int
+        # ac: Asistente
+        + Mision(combustible: int, energia: int, desgaste: int, asistente: Asistente)
+        + realizarMision()
+        # preparar()
+        # {abstract} ejecutar()
+        # {abstract} evaluarResultado()
+        # {abstract} cerrar()
+        # informe()
+    }
+
+    class Mision_01 extends Mision
+    class Mision_02 extends Mision
+    class Mision_03 extends Mision
+}
+@enduml

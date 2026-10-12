@@ -1,0 +1,34 @@
+@startuml
+package src.Tripulacion {
+    abstract class Tripulante {
+        # ident: String
+        # antiguedad: int
+        + getIdent(): String
+        + getAntiguedad(): int
+        + setAntiguedad(antiguedad: int)
+        + {abstract} getRemu(): double
+        + {abstract} toString(): String
+    }
+
+    class Alferez extends Tripulante
+    class Capitan extends Tripulante
+    class Consejero extends Tripulante
+    class Teniente extends Tripulante
+
+    abstract class DecoratorTrip extends Tripulante {
+        + DecoratorTrip()
+    }
+
+    class Marciano extends DecoratorTrip {
+        - tripu: Tripulante
+    }
+    class Terricola extends DecoratorTrip {
+        - tripu: Tripulante
+    }
+    class Vulcano extends DecoratorTrip {
+        - tripu: Tripulante
+    }
+
+    DecoratorTrip o-- Tripulante : "Decora a"
+}
+@enduml

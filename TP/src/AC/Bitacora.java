@@ -7,16 +7,16 @@ import java.util.ArrayList;
  * **/
 public class Bitacora {
 
-    public static ArrayList<Evento> bitacora = new ArrayList<>();
+    public  ArrayList<Evento> bitacora = new ArrayList<>();
 
     public Bitacora(){};
 
-    public static void agregaEvento(LocalDateTime t, String titulo, String msj) {
+    public  void agregaEvento(LocalDateTime t, String titulo, String msj) {
        Evento evento = new Evento(t,titulo,msj);
        bitacora.add(evento);
     }
 
-    public static void mostrarBitacora(){
+    public  void mostrarBitacora(){
         int i,n = bitacora.size();
 
         if (n == 0){

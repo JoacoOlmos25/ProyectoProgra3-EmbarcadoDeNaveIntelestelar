@@ -10,7 +10,7 @@ public class DisponibleState implements MotorState {
 
     public DisponibleState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
-        Bitacora.agregaEvento(LocalDateTime.now(),"Cambio de estado del Motor Warp","El Motor warp esta disponible y en espera");
+        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp esta disponible y en espera");
     }
 
     @Override

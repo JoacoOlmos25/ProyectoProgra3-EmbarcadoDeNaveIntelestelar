@@ -17,6 +17,8 @@ public abstract class Nave {
     private int desgaste;
     protected ArrayList <Tripulante> tripulacion = new ArrayList<>();
     protected MotorWarp motorWarp;
+    protected Bitacora bitacoraNave;
+
 
     /**Contrato
         *Creacion de la nave con sus atributos base (combustible, energia, desgaste, estado motor warp)
@@ -132,6 +134,11 @@ public abstract class Nave {
         }
     }
 
+    public void setBitacora(Bitacora b) {
+        this.bitacoraNave = b;
+        this.motorWarp.setBitacora(b); // Le pasamos la referencia al motor
+    }
+
     /**Contrato
         *Precondicion
             *t debe tener una tripulacion
@@ -147,7 +154,7 @@ public abstract class Nave {
         //cuadno se haga el motor warp con los estados podria poner validacion de no agregar tripulaion en pleno salto
 
         tripulacion.add(t);
-        Bitacora.agregaEvento(LocalDateTime.now(),"Se agrega un Tripulante",t.toString()+" Remuneracion total=" + t.getRemu()+"}");
+        this.bitacoraNave.agregaEvento(LocalDateTime.now(),"Se agrega un Tripulante",t.toString()+" Remuneracion total=" + t.getRemu()+"}");
     }
 
 //    Una carga de combustible o energía no podrá superar la capacidad máxima. Una operación que no pueda

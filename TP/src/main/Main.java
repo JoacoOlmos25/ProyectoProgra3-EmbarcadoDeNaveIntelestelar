@@ -33,12 +33,10 @@ public class Main {
             nave1.insertarTripulante(t4);
             nave1.insertarTripulante(t5);
 
-
+            Ac.mostrarBitacora();
 
             Mision m1 = new Mision_01(4,15,4,Ac); // calculo de energia ahora es arbitrario ya que no puede calcularse dinamicamente con el universo
             m1.realizarMision();
-
-            Ac.mostrarBitacora();
 
             // cambio de Nave al Ac
 
@@ -52,10 +50,12 @@ public class Main {
             nave2.insertarTripulante(t4);
             nave2.insertarTripulante(t5);
 
+            Ac2.mostrarBitacora();
+
             Mision m2 = new Mision_02(50000,15,4, Ac2); // calculo de energia ahora es arbitrario ya que no puede calcularse dinamicamente con el universo
             m2.realizarMision();
 
-            Ac2.mostrarBitacora();
+
 
         } catch (AntiguedadNegativa e) {
             throw new RuntimeException(e);

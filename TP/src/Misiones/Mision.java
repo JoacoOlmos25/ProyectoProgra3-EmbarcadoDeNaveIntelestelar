@@ -1,9 +1,6 @@
 package src.Misiones;
 
 import src.AC.Asistente;
-import src.AC.Bitacora;
-
-import java.time.LocalDateTime;
 
 public abstract class Mision {
     protected int combNecesario = 4;
@@ -48,7 +45,7 @@ public abstract class Mision {
     public void realizarMision(){
         try {
             this.preparar();
-            Bitacora.agregaEvento(LocalDateTime.now(), "Misión preparada", "Recursos suficientes, mantenimiento correcto y motor disponible");
+            ac.registrarEvento( "Misión preparada", "Recursos suficientes, mantenimiento correcto y motor disponible");
             this.ejecutar();
             this.evaluarResultado();
             this.cerrar();
@@ -56,7 +53,7 @@ public abstract class Mision {
             //se deberían registrar los pasos en la bitácora
         }
         catch (MisionException e){
-            Bitacora.agregaEvento(LocalDateTime.now(), "Misión fallida", e.getMessage());
+            ac.registrarEvento("Misión fallida", e.getMessage());
         }
     }
 
