@@ -6,11 +6,10 @@ import src.Tripulacion.Tripulante;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public abstract class Nave {
+public abstract class Nave implements FuenteDeRecursos, Mantenible {
     //constantes de nave
     private final int capMaxCombustible = 100;
     private final int capMaxEnergia = 100;
-    protected boolean requiereMantenimiento ;
     //atributos comunes de nave
     private int combustible;
     private int energia;
@@ -36,18 +35,20 @@ public abstract class Nave {
         this.combustible = combInicial;
         this.energia = eInicial;
         this.desgaste = 0;
-        this.requiereMantenimiento = false;
-        this.motorWarp = new MotorWarp();
+        this.motorWarp = new MotorWarp(this, this);
     }
 
+    @Override
     public int getCombustible() {
         return this.combustible;
     }
 
+    @Override
     public int getEnergia() {
         return this.energia;
     }
 
+    @Override
     public int getDesgaste(){
         return this.desgaste;
     }
@@ -57,9 +58,11 @@ public abstract class Nave {
             *Cantidad es positiva
         *Postcondicion
             *Disminuye el combustible en la cantidad pasada
+     * @throws RecursosInsuficientesException si cantidad > combustible disponible
      */
 
-    public void consumirCombustible(int cantidad) {
+    @Override
+    public void consumirCombustible(int cantidad) throws RecursosInsuficientesException {
         if (this.combustible >= cantidad) {
             this.combustible -= cantidad;
         } else {
@@ -72,9 +75,11 @@ public abstract class Nave {
             *Cantidad es positiva
         *Postcondicion
             *Disminuye la energia en la cantidad pasada
+     * @throws RecursosInsuficientesException si cantidad > combustible disponible
      */
 
-    public void consumirEnergia(int cantidad) {
+    @Override
+    public void consumirEnergia(int cantidad) throws RecursosInsuficientesException {
         if (this.energia >= cantidad) {
             this.energia -= cantidad;
         } else {
@@ -87,13 +92,13 @@ public abstract class Nave {
             *Comprueba si es necesario realizar mantenimiento en la nave
         *Postcondicion
             *Devuelve la nave en perfecto estado
+     * @throws MantenimientoException si la nave no requiere mantenimiento
      */
+    @Override
+    public void realizarMantenimiento() throws MantenimientoException {
 
-    public void realizaMantenimiento(){
-
-        if (this.requiereMantenimiento){
+        if (this.requiereMantenimiento()){
             this.desgaste = 0;
-            this.requiereMantenimiento = false;
         }else
             throw new MantenimientoException("La nave no necesita mantenimiento");//la aparte
     }
@@ -103,8 +108,9 @@ public abstract class Nave {
      * Evalúa si la nave requiere mantenimiento según los límites de desgaste establecidos
      * @return true si la nave necesita mantenimiento, falso en caso contrario
      */
-    public boolean consultaReqMantenimiento(){
-        return this.requiereMantenimiento;
+    @Override
+    public boolean requiereMantenimiento(){
+        return this.desgaste >= 80;
     }
 
 
@@ -116,23 +122,25 @@ public abstract class Nave {
         return motorWarp.consultaMotorDisponible();
     }
 
+
+
     /**Contrato
         *Precondicion
             *Cant es positiva
         *Postcondicion
-            *Devuelve la nave con un desgaste
+            *Incrementa el desgaste en la cantidad indicada
+     * @throws MantenimientoException si incrementar el desgaste en la cantidad indicada supera el límite (100)
      */
+    @Override
+    public void incrementaDesgaste(int cant) throws MantenimientoException {
 
-    public void incrementaDesgaste(int cant){
-        int aux;
         if ((this.desgaste + cant) > 100){
-            throw new ExcesoDesgasteException("Desgaste por encima de lo que se va a usar");
+            throw new MantenimientoException("Desgaste por encima del permitido");
         }else{
             this.desgaste += cant;
-            if (this.desgaste >= 80)
-                this.requiereMantenimiento = true;
         }
     }
+
 
     public void setBitacora(Bitacora b) {
         this.bitacoraNave = b;
