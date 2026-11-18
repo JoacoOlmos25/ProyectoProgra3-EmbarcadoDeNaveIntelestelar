@@ -1,3 +1,5 @@
+package src.destinoytablero;
+
 /** Recibe avisos cuando se actualiza el tablero observado. */
 public interface Observador {
     /**

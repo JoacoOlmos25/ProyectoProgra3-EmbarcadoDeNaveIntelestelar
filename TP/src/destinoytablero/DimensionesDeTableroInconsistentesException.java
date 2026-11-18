@@ -1,3 +1,5 @@
+package src.destinoytablero;
+
 /** Indica que alguna dimensión del tablero está fuera del rango permitido. */
 public class DimensionesDeTableroInconsistentesException extends Exception {
     /** Identificador de versión para la serialización. */

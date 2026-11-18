@@ -2,13 +2,18 @@ package src.Misiones;
 //Intercepción y asistencia
 
 import src.AC.Asistente;
+import src.destinoytablero.Destino;
+import src.destinoytablero.Tablero;
 
 public class Mision_01 extends Mision {
-    public Mision_01(int combustible, int energia, int desgaste, Asistente ac) {
-        super(combustible, energia, desgaste, ac);
-    }
 
-    public Mision_01() {}
+    private static final int REQ_COMBUSTIBLE = 4;
+    private static final int REQ_ENERGIA = 5;
+    private static final int REQ_DESGASTE = 4;
+
+    public Mision_01(Asistente ac, Destino destino, Tablero tablero) {
+        super(REQ_COMBUSTIBLE, REQ_ENERGIA, REQ_DESGASTE, ac, destino, tablero);
+    }
 
     @Override
     protected void ejecutar() {
