@@ -1,9 +1,5 @@
 package src.MotorWarp;
 
-import src.AC.Bitacora;
-
-import java.time.LocalDateTime;
-
 public class PreparandoState implements MotorState {
 
     private MotorWarp motorWarp;
@@ -14,22 +10,28 @@ public class PreparandoState implements MotorState {
     }
 
     @Override
+    public void saltarWarp() throws MotorException {
+        this.saltar();
+    }
+
+    @Override
     public void prepararSalto() throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Preparación de salto ya en curso");
     }
 
     @Override
     public void saltar() {
-        motorWarp.setEstado(new EnWarpState(motorWarp));
+        if (motorWarp.energiaSuficiente())
+            motorWarp.setEstado(new EjecutandoSaltoWarpState(motorWarp));
     }
 
     @Override
-    public void finalizarSalto() throws TransicionInvalidaException {
+    public void ejecutarSalto() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Preparando salto: no se puede finalizar");
     }
 
     @Override
-    public void hacerDisponible() throws TransicionInvalidaException {
+    public void enfriar() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Preparando salto: motor no disponible");
     }
 

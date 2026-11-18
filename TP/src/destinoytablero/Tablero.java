@@ -1,3 +1,5 @@
+package src.destinoytablero;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +8,7 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+
 
 /**
  * Administra una grilla rectangular, sus elementos, la nave y el objetivo.

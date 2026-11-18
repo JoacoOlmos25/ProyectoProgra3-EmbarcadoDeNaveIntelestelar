@@ -13,6 +13,11 @@ public class EnfriandoState implements MotorState {
         this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp se esta enfriando luego de un salto");
     }
 
+    @Override
+    public void saltarWarp() throws MotorException {
+        this.enfriar();
+    }
+
 
     @Override
     public void prepararSalto() throws TransicionInvalidaException {
@@ -25,12 +30,13 @@ public class EnfriandoState implements MotorState {
     }
 
     @Override
-    public void finalizarSalto() throws TransicionRedundanteException {
+    public void ejecutarSalto() throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Salto ya finalizado, enfriamiento ya en curso");
     }
 
     @Override
-    public void hacerDisponible() throws TransicionInvalidaException {
+    public void enfriar() {
+        motorWarp.aplicaDesgastePorSalto();
         motorWarp.setEstado(new DisponibleState(motorWarp));
     }
 

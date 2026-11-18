@@ -1,7 +1,7 @@
 package src.MotorWarp;
 
-public class CancelarMotorException extends RuntimeException {
-  public CancelarMotorException(String message) {
-    super(message);
-  }
+public class CancelarMotorException extends MotorException {
+    public CancelarMotorException(String message) {
+        super("Salto cancelado. " + message);
+    }
 }

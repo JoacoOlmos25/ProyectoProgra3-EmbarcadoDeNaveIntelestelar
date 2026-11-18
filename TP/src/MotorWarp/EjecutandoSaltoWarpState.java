@@ -1,16 +1,17 @@
 package src.MotorWarp;
 
-import src.AC.Bitacora;
-
-import java.time.LocalDateTime;
-
-public class EnWarpState implements MotorState {
+public class EjecutandoSaltoWarpState implements MotorState {
 
     private MotorWarp motorWarp;
 
-    public EnWarpState(MotorWarp motorWarp) {
+    public EjecutandoSaltoWarpState(MotorWarp motorWarp) {
         this.motorWarp = motorWarp;
         this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp esta activo y en curso");
+    }
+
+    @Override
+    public void saltarWarp() throws MotorException {
+        this.ejecutarSalto();
     }
 
     @Override
@@ -24,12 +25,19 @@ public class EnWarpState implements MotorState {
     }
 
     @Override
-    public void finalizarSalto() {
-        motorWarp.setEstado(new EnfriandoState(motorWarp));
+    public void ejecutarSalto() {
+        if (motorWarp.energiaSuficiente()) {
+            motorWarp.consumeEnergiaPorSalto();
+            //TODO: mueve la nave
+            motorWarp.setEstado(new EnfriandoState(motorWarp));
+        }
+        else {                                                              //debería lanzarse excepción y catchearse acá?
+            motorWarp.setEstado(new PreparandoState(motorWarp));
+        }
     }
 
     @Override
-    public void hacerDisponible() throws TransicionInvalidaException {
+    public void enfriar() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Warp en curso: motor no disponible");
     }
 

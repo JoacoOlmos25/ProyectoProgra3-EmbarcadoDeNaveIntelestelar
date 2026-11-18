@@ -22,12 +22,14 @@ public class Asistente {
     }
 
     public boolean consultaReqMantenimiento(){
-        return nave.consultaReqMantenimiento();
+        return nave.requiereMantenimiento();
     }
 
     public boolean consultaMotorDisp(){
         return nave.consultaMotorDisponible();
     }
+
+
 
     public void mostrarBitacora(){
         bitacora.mostrarBitacora();
