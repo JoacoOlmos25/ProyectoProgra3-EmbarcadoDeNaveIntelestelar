@@ -1,30 +1,46 @@
 package src.AC;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Clase Bitacora, esta guardara en un array la lista de los eventos creados
- * permitira la agregacion de los eventos a la lista y mostrar el listado en su totalidad por consola.
- * **/
+ * Clase Bitacora: almacena la secuencia de eventos de la nave
+ * y permite agregar nuevos registros y consultarlos de forma protegida.
+ */
 public class Bitacora {
 
-    public  ArrayList<Evento> bitacora = new ArrayList<>();
+    private final List<Evento> bitacora = new ArrayList<>();
 
-    public Bitacora(){};
-
-    public  void agregaEvento(LocalDateTime t, String titulo, String msj) {
-       Evento evento = new Evento(t,titulo,msj);
-       bitacora.add(evento);
+    public Bitacora() {
     }
 
-    public  void mostrarBitacora(){
-        int i,n = bitacora.size();
+    public void agregaEvento(LocalDateTime t, String titulo, String msj) {
+        assert t != null : "La fecha/hora del evento no puede ser nula";
+        assert titulo != null && !titulo.isBlank() : "El título no puede ser nulo o vacío";
+        assert msj != null : "El mensaje no puede ser nulo";
 
-        if (n == 0){
+        Evento evento = new Evento(t, titulo, msj);
+        bitacora.add(evento);
+    }
+
+    /**
+     * Devuelve una vista de solo lectura de los eventos registrados.
+     * Cualquier intento externo de modificar la lista lanzará UnsupportedOperationException.
+     */
+    public List<Evento> getEventos() {
+        return Collections.unmodifiableList(this.bitacora);
+    }
+
+    // Se conserva temporalmente para compatibilidad con el Main de E1
+    public void mostrarBitacora() {
+        if (bitacora.isEmpty()) {
             System.out.println("No han ocurrido eventos");
-        }else{
-            for (i=0 ;i<n;i++){
-              System.out.println( bitacora.get(i).toString());
+        } else {
+            for (Evento e : bitacora) {
+                System.out.println(e.toString());
             }
         }
-    };
+    }
 }

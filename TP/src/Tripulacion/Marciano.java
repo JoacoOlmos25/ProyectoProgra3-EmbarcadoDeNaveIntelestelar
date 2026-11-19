@@ -1,8 +1,6 @@
 package src.Tripulacion;
 
 public class Marciano extends DecoratorTrip {
-    private Tripulante tripu;
-
     /**Contrato
         *Este es para un tripulante con cargo le asigna como origen Marciano
         *Precondiciones
@@ -12,8 +10,7 @@ public class Marciano extends DecoratorTrip {
      */
 
     public Marciano(Tripulante tripu){
-        super();
-        this.tripu = tripu;
+        super(tripu);
     }
 
     /**Contrato

@@ -32,4 +32,27 @@ public abstract class Tripulante {
             throw new AntiguedadNegativa();
         }
     }
+    public boolean esCapitan() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tripulante)) {
+            return false;
+        }
+        Tripulante otro = (Tripulante) obj;
+        String miIdent = this.getIdent();
+        String otroIdent = otro.getIdent();
+        return miIdent != null && miIdent.equals(otroIdent);
+    }
+
+    @Override
+    public int hashCode() {
+        String miIdent = this.getIdent();
+        return (miIdent == null) ? 0 : miIdent.hashCode();
+    }
 }
