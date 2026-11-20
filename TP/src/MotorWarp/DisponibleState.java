@@ -18,7 +18,7 @@ public class DisponibleState implements MotorState {
     @Override
     public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
         this.prepararWarp();
-        this.motorWarp.mover(tablero, ruta, 1);
+        this.motorWarp.saltoNormal(tablero, ruta);
     }
 
     @Override
@@ -52,5 +52,10 @@ public class DisponibleState implements MotorState {
     @Override
     public boolean motorDisponible() {
         return true;
+    }
+
+    @Override
+    public void reiniciarWarp() {
+        //Motor ya disponible: no hay nada que reiniciar
     }
 }

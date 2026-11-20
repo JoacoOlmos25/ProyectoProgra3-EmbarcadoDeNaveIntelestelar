@@ -5,12 +5,15 @@ import src.ElementosDelUniverso.Colisionable;
 
 public class Explorador extends Nave{
     /**Contrato
-        *Crea una nave de tipo exploradora con un combustible y energia inicial
+     *Crea una nave de tipo exploradora con un combustible y energia inicial
      */
     public Explorador(){
         super(60,80);
     }
 
+    /**
+     * Primer paso del Double Dispatch: le indica al colisionado que lo enfrenta una nave Exploradora
+     */
     @Override
     public void interactuar(Colisionable colisionado) throws ColisionException {
         colisionado.enfrentadoPorExplorador();
@@ -18,17 +21,17 @@ public class Explorador extends Nave{
 
     @Override
     public void enfrentadoPorAtaque() throws ColisionException {
-        //Pierde
+        perderCombate("Ataque");
     }
 
     @Override
     public void enfrentadoPorCarguero(){
-        //Gana
+        ganarCombate("Carguero");
     }
 
     @Override
     public void enfrentadoPorExplorador(){
-        //Pacto de paz
+        pactarPaz("Explorador");
     }
 
 }

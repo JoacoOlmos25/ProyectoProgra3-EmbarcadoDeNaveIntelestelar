@@ -5,6 +5,7 @@ import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 import src.nave.FuenteDeRecursos;
 import src.nave.Mantenible;
+import src.nave.RecursosInsuficientesException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class MotorWarp {
 
     public static final int COSTO_WARP_ENERGIA = 5;
     public static final int COSTO_WARP_DESGASTE = 3;
-    public static final int COSTO_SALTO_ENERGIA = 2;
+    public static final int COSTO_SALTO_COMBUSTIBLE = 2;
 
     private MotorState estado;
     private Bitacora bitacora;
@@ -54,20 +55,39 @@ public class MotorWarp {
 
 
     /**
+     * Realiza un salto normal: consume el combustible del salto y avanza un casillero sobre la ruta.
+     * Precondiciones: tablero y ruta no nulos, la ruta no está vacía
+     * Postcondiciones: el combustible de la nave disminuye en COSTO_SALTO_COMBUSTIBLE y la nave
+     *                  queda en la primera posición de la ruta, que se quita de la misma
+     * @throws RecursosInsuficientesException si la nave no tiene combustible para el salto (la nave no se mueve)
+     */
+    public void saltoNormal(Tablero tablero, ArrayList<Posicion> ruta) {
+        recursos.consumirCombustible(COSTO_SALTO_COMBUSTIBLE);
+        this.mover(tablero, ruta, 1);
+    }
+
+    /**
+     * Avanza la nave sobre la ruta la cantidad de pasos indicada, consumiendo las posiciones recorridas.
+     * @param tablero tablero donde se mueve la nave, NotNull
+     * @param ruta posiciones pendientes de la ruta, NotNull
+     * @param pasos cantidad de casilleros a avanzar
      *
-     * @param tablero
-     * @param ruta
-     * @param pasos > 0
+     * Precondiciones: pasos > 0, la ruta no está vacía
+     * Postcondiciones: se quitan de la ruta min(pasos, ruta.size()) posiciones y la nave queda en la última
+     *                  de ellas; si quedaban menos posiciones que pasos, la nave avanza solo las que quedaban
      */
     public void mover(Tablero tablero, ArrayList<Posicion> ruta, int pasos){
+        assert tablero != null && ruta != null : "El tablero y la ruta no pueden ser nulos";
+        assert pasos > 0 : "La cantidad de pasos debe ser positiva";
+        assert !ruta.isEmpty() : "No hay posiciones pendientes en la ruta";
 
-        Posicion posicionSiguiente;
-        for (int i = 0; i < pasos; i++)
+        int pasosReales = Math.min(pasos, ruta.size());
+        Posicion posicionSiguiente = null;
+        for (int i = 0; i < pasosReales; i++)
             posicionSiguiente = ruta.remove(0);
 
         tablero.moverNave(posicionSiguiente);
     }
-
 
     public boolean consultaMotorDisponible(){
         return estado.motorDisponible();
@@ -82,4 +102,15 @@ public class MotorWarp {
             this.bitacora.agregaEvento(LocalDateTime.now(), titulo, msj);
         }
     }
+
+    /**
+     * Devuelve el motor al estado disponible al cerrar una misión.
+     * Precondiciones: ninguna
+     * Postcondiciones: consultaMotorDisponible() == true, salvo que el enfriamiento pendiente supere el desgaste permitido
+     * @throws MantenimientoException si al completar el enfriamiento el desgaste supera el permitido
+     */
+    public void reiniciar(){
+        estado.reiniciarWarp();
+    }
+
 }

@@ -17,7 +17,7 @@ public class PreparandoState implements MotorState {
     @Override
     public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
         this.iniciarWarp();
-        this.motorWarp.mover(tablero, ruta, 1);
+        this.motorWarp.saltoNormal(tablero, ruta);
     }
 
     @Override
@@ -54,4 +54,9 @@ public class PreparandoState implements MotorState {
         return false;
     }
 
+    @Override
+    public void reiniciarWarp() {
+        //Se descarta el salto pendiente
+        motorWarp.setEstado(new DisponibleState(motorWarp));
+    }
 }

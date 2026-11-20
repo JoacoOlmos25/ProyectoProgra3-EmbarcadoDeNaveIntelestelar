@@ -51,6 +51,7 @@ public abstract class Nave implements Comandable {
         verificarInvariantes();
     }
 
+
     private void verificarInvariantes() {
         assert this.combustible >= 0 && this.combustible <= capMaxCombustible : "Invariante de combustible violado";
         assert this.energia >= 0 && this.energia <= capMaxEnergia : "Invariante de energía violado";
@@ -72,6 +73,7 @@ public abstract class Nave implements Comandable {
         return this.desgaste;
     }
 
+    @Override
     public List<Tripulante> getTripulacion() {
         return Collections.unmodifiableList(this.tripulacion);
     }
@@ -194,6 +196,7 @@ public abstract class Nave implements Comandable {
     /**
      * Incorpora un tripulante a la nave preservando identidad única y capitán único.
      */
+    @Override
     public void insertarTripulante(Tripulante t) {
         if (t == null) {
             throw new NoexisteTripulanteException("El tripulante no puede ser nulo");
@@ -270,4 +273,80 @@ public abstract class Nave implements Comandable {
     public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
         this.motorWarp.saltarWarp(tablero, ruta);
     }
+
+    /**
+     * Contrato:
+     * Recarga por completo combustible y energía y deja el desgaste en 0 (recompensa de la misión M-03).
+     * Precondición: ninguna
+     * Postcondición:
+     * - combustible == capMaxCombustible
+     * - energia == capMaxEnergia
+     * - desgaste == 0
+
+     No usé realizarMantenimiento() porque tira excepción si el desgaste es menor a 80, y la M-03 tiene que dejarlo en 0 siempre.
+     */
+    @Override
+    public void reacondicionamientoTotal() {
+        this.combustible = capMaxCombustible;
+        this.energia = capMaxEnergia;
+        this.desgaste = 0;
+
+        assert this.combustible == capMaxCombustible && this.energia == capMaxEnergia && this.desgaste == 0
+                : "Postcondición violada al reacondicionar la nave";
+        verificarInvariantes();
+    }
+
+    /**
+     * Contrato:
+     * Devuelve el motor Warp al estado disponible al cerrar una misión.
+     * Precondición: ninguna
+     * Postcondición: consultarMotorDisponible() == true
+     * @throws MantenimientoException si el enfriamiento pendiente supera el desgaste permitido
+     */
+    @Override
+    public void reiniciarMotor() {
+        this.motorWarp.reiniciar();
+    }
+
+    /**
+     * Contrato:
+     * Resuelve una derrota en combate contra una nave enemiga (segundo paso del Double Dispatch).
+     * Precondición: rival != null
+     * Postcondición: el combate queda registrado en la bitácora, si la nave tiene una asignada
+     * @throws ColisionException siempre, ya que la nave fue derrotada y no puede continuar la misión
+     */
+    protected void perderCombate(String rival) throws ColisionException {
+        assert rival != null : "El rival no puede ser nulo";
+        registrarCombate("Combate perdido", "La nave " + getClass().getSimpleName() + " fue derrotada por una nave tipo " + rival);
+        throw new ColisionException("La nave " + getClass().getSimpleName() + " fue derrotada por una nave tipo " + rival);
+    }
+
+    /**
+     * Contrato:
+     * Resuelve una victoria en combate contra una nave enemiga (segundo paso del Double Dispatch).
+     * Precondición: rival != null
+     * Postcondición: el combate queda registrado en la bitácora, si la nave tiene una asignada; los recursos no cambian
+     */
+    protected void ganarCombate(String rival) {
+        assert rival != null : "El rival no puede ser nulo";
+        registrarCombate("Combate ganado", "La nave " + getClass().getSimpleName() + " derrotó a una nave tipo " + rival);
+    }
+
+    /**
+     * Contrato:
+     * Resuelve un encuentro pacífico con una nave del mismo tipo (segundo paso del Double Dispatch).
+     * Precondición: rival != null
+     * Postcondición: el pacto queda registrado en la bitácora, si la nave tiene una asignada; los recursos no cambian
+     */
+    protected void pactarPaz(String rival) {
+        assert rival != null : "El rival no puede ser nulo";
+        registrarCombate("Pacto de paz", "La nave " + getClass().getSimpleName() + " acordó no enfrentarse con una nave tipo " + rival);
+    }
+
+    private void registrarCombate(String titulo, String detalle) {
+        if (this.bitacoraNave != null) {
+            this.bitacoraNave.agregaEvento(LocalDateTime.now(), titulo, detalle);
+        }
+    }
+
 }

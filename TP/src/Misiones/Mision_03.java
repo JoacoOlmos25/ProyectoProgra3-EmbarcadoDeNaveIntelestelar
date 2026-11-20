@@ -2,6 +2,7 @@ package src.Misiones;
 
 import src.AC.Asistente;
 import src.destinoytablero.Destino;
+import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 
 //Retorno seguro a una zona designada
@@ -15,18 +16,32 @@ public class Mision_03 extends Mision{
         super(REQ_COMBUSTIBLE, REQ_ENERGIA, REQ_DESGASTE, ac, destino, tablero);
     }
 
+    /**
+     * El objetivo de esta misión es la base de origen, no una posición al azar
+     * Postcondiciones: la base de origen queda establecida como objetivo del tablero
+     * @return posición de la base de origen
+     */
     @Override
-    protected void ejecutar() {
-        System.out.println("Ejecutando Mision_03");
+    protected Posicion definirObjetivo() {
+        Posicion base = tablero.getPosicionBase();
+        tablero.establecerObjetivo(base);
+        return base;
     }
 
+    /**
+     * Reacondiciona la nave al regresar a la base
+     * Precondiciones: la nave se encuentra en la base de origen
+     * Postcondiciones: combustible y energía al 100% y desgaste en 0; queda registrado en la bitácora y en el informe
+     */
     @Override
     protected void evaluarResultado() {
-        System.out.println("Mision_01 ejectuada exitosamente");
+        ac.reacondicionarNave();
+        ac.registrarEvento("Retorno a base", "Recarga total de combustible y energía, y mantenimiento general (desgaste 0)");
+        agregarAlInforme("Reacondicionamiento: tanques al 100% y desgaste reiniciado a 0");
     }
 
     @Override
-    protected void cerrar() {
-        System.out.println(" Mision_03 cerrada");
+    protected String getNombre() {
+        return "M-03 Retorno a punto seguro";
     }
 }

@@ -50,4 +50,14 @@ public interface MotorState {
      * @return boolean, true si está disponible, false en caso contrario
      */
     boolean motorDisponible();
+
+    /**
+     * Reinicia el motor al cerrar una misión: descarta la preparación o el salto pendiente y, si se estaba enfriando,
+     * completa el enfriamiento aplicando su desgaste.
+     * Pre: ninguna.
+     * Post: el motor Warp queda en estado "Disponible"
+     * MantenimientoException (no chequeada) si al completar el enfriamiento el desgaste supera el permitido; en ese caso el motor queda en "Enfriando"
+     */
+    void reiniciarWarp();
+
 }

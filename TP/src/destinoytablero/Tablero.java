@@ -378,4 +378,37 @@ public class Tablero extends Observable {
         return tablero;
     }
 
+    //agregado :
+
+    /**
+     * Consulta la posición de la base de origen, que coincide con la casilla
+     * central donde comienza la nave.
+     * <p><b>Precondiciones:</b> ninguna.</p>
+     * <p><b>Postcondiciones:</b> devuelve una posición nueva igual a
+     * {@code (x / 2, y / 2)}. El estado del tablero permanece igual.</p>
+     * @return posición de la base de origen
+     */
+    public Posicion getPosicionBase() {
+        return new Posicion(x / 2, y / 2);
+    }
+
+    /**
+     * Fija como objetivo una posición determinada, en lugar de elegirla al azar.
+     * Se utiliza en misiones cuyo destino es conocido, como el retorno a la base.
+     * <p><b>Precondiciones:</b> la posición no es nula y está dentro del tablero.</p>
+     * <p><b>Postcondiciones:</b> el objetivo guardado coincide con la posición
+     * recibida. No cambia la ocupación ni la nave. Si en esa casilla hay un
+     * elemento, se conserva. Al terminar, notifica a los observadores.</p>
+     * <p><b>Excepciones declaradas:</b> ninguna.</p>
+     * @param posicion casilla que pasa a ser el objetivo
+     */
+    public void establecerObjetivo(Posicion posicion) {
+        assert posicion != null : "El objetivo no puede ser nulo";
+        assert estaDentro(posicion) : "El objetivo debe estar dentro del tablero";
+        this.objetivo = posicion;
+        notificarObservadores("Se estableció el objetivo en la posición ("
+                + posicion.getX() + ", " + posicion.getY() + ").");
+    }
+
+
 }

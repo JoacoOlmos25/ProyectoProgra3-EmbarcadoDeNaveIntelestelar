@@ -5,6 +5,7 @@ import src.ElementosDelUniverso.ElementoDelUniverso;
 import src.MotorWarp.MotorException;
 import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
+import src.nave.RecursosInsuficientesException;
 import src.nave.Comandable;
 import src.nave.Nave;
 import java.util.List;
@@ -36,12 +37,6 @@ public class Asistente {
 
     public boolean consultaMotorDisp(){
         return nave.consultarMotorDisponible();
-    }
-
-    public void despegue(int combustible, int energia, int desgaste){
-        nave.consumirCombustible(combustible);
-        nave.consumirEnergia(energia);
-        nave.incrementaDesgaste(desgaste);
     }
 
     public void inspeccionarPosicionActual(Tablero tablero) throws ColisionException {
@@ -99,5 +94,54 @@ public class Asistente {
 
     public void registrarEvento(String titulo, String msj) {
         bitacora.agregaEvento(LocalDateTime.now(), titulo, msj);
+    }
+
+    /**
+     * Aplica a la nave el costo inicial de una misión.
+     * Precondiciones: combustible >= 0, energia >= 0, desgaste >= 0
+     * Postcondiciones: se descuentan los recursos y se suma el desgaste indicados; los valores en 0 no se aplican
+     * @throws RecursosInsuficientesException si la nave no cuenta con los recursos
+     * @throws MantenimientoException si el desgaste resultante supera el permitido
+     */
+    public void despegue(int combustible, int energia, int desgaste){
+        assert combustible >= 0 && energia >= 0 && desgaste >= 0 : "Los costos de despegue no pueden ser negativos";
+
+        if (combustible > 0) nave.consumirCombustible(combustible);
+        if (energia > 0) nave.consumirEnergia(energia);
+        if (desgaste > 0) nave.incrementaDesgaste(desgaste);
+    }
+
+    /**
+     * Transfiere recursos de la nave a una nave aliada (misión M-01).
+     * Precondiciones: combustible >= 0, energia >= 0
+     * Postcondiciones: si la nave cuenta con ambos recursos, se descuentan; si no, no se descuenta ninguno
+     * @throws RecursosInsuficientesException si la nave no cuenta con alguno de los recursos solicitados
+     */
+    public void transferirRecursos(int combustible, int energia) {
+        assert combustible >= 0 && energia >= 0 : "Los recursos a transferir no pueden ser negativos";
+
+        if (nave.getCombustible() < combustible || nave.getEnergia() < energia)
+            throw new RecursosInsuficientesException("La nave no tiene recursos suficientes para la transferencia");
+        if (combustible > 0) nave.consumirCombustible(combustible);
+        if (energia > 0) nave.consumirEnergia(energia);
+    }
+
+    /**
+     * Reacondiciona por completo la nave (misión M-03).
+     * Precondiciones: ninguna
+     * Postcondiciones: la nave queda con combustible y energía al máximo y desgaste en 0
+     */
+    public void reacondicionarNave() {
+        nave.reacondicionamientoTotal();
+    }
+
+    /**
+     * Devuelve el motor de la nave al estado disponible.
+     * Precondiciones: ninguna
+     * Postcondiciones: el motor queda disponible
+     * @throws MantenimientoException si el enfriamiento pendiente supera el desgaste permitido
+     */
+    public void reiniciarMotor() {
+        nave.reiniciarMotor();
     }
 }

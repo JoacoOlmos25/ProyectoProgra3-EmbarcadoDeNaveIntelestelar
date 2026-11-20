@@ -53,4 +53,9 @@ public class EnfriandoState implements MotorState {
         return false;
     }
 
+    @Override
+    public void reiniciarWarp() {
+        //Se completa el enfriamiento (aplica el desgaste y pasa a Disponible)
+        this.enfriarWarp();
+    }
 }
