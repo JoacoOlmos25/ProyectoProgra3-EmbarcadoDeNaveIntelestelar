@@ -1,8 +1,9 @@
 package src.MotorWarp;
 
-import src.AC.Bitacora;
+import src.destinoytablero.Posicion;
+import src.destinoytablero.Tablero;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class EnfriandoState implements MotorState {
 
@@ -14,36 +15,38 @@ public class EnfriandoState implements MotorState {
     }
 
     @Override
-    public void saltarWarp() throws MotorException {
-        this.enfriar();
+    public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
+        this.enfriarWarp();
+    }
+
+    @Override
+    public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
+        this.enfriarWarp();
     }
 
 
     @Override
-    public void prepararSalto() throws TransicionInvalidaException {
+    public void prepararWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Motor enfriándose: todavía no se puede utilizar");
     }
 
     @Override
-    public void saltar() throws TransicionInvalidaException {
+    public void iniciarWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Motor enfriándose: todavía no se puede utilizar");
     }
 
     @Override
-    public void ejecutarSalto() throws TransicionRedundanteException {
+    public void ejecutandoWarp(Tablero tablero, ArrayList<Posicion> ruta) throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Salto ya finalizado, enfriamiento ya en curso");
     }
 
     @Override
-    public void enfriar() {
+    public void enfriarWarp() {
         motorWarp.aplicaDesgastePorSalto();
         motorWarp.setEstado(new DisponibleState(motorWarp));
     }
 
-    @Override
-    public void cancelarSalto() throws TransicionInvalidaException {
-        throw new TransicionInvalidaException("Motor enfriándose: no se puede cancelar la acción");
-    }
+
 
     @Override
     public boolean motorDisponible() {

@@ -1,10 +1,13 @@
 package src.MotorWarp;
 
 import src.AC.Bitacora;
+import src.destinoytablero.Posicion;
+import src.destinoytablero.Tablero;
 import src.nave.FuenteDeRecursos;
 import src.nave.Mantenible;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class MotorWarp {
 
@@ -41,27 +44,30 @@ public class MotorWarp {
         this.estado = estado;
     }
 
-
-    /*
-    public void saltoWarp() throws MotorException {
-        estado.prepararSalto();
-        estado.saltar();
-        estado.ejecutarSalto();
-        estado.enfriar();
+    public void saltar(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException{
+        estado.saltar(tablero, ruta);
     }
 
-    Originalmente, este método realizaba todo el proceso del salto de principio a fin, pero como ahora la modalidad del juego es por turnos coordinados en un mismo hilo,
-    las fases se deben separar para realizarse una por vez. Como la fase a ejecutar depende del estado particular del motor en ese momento, debe ser el mismo
-    estado el que contenga la lógica concreta a ejecutar.
+    public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
+        estado.saltarWarp(tablero, ruta);
+    }
+
+
+    /**
+     *
+     * @param tablero
+     * @param ruta
+     * @param pasos > 0
      */
+    public void mover(Tablero tablero, ArrayList<Posicion> ruta, int pasos){
 
-    public void saltarWarp() throws MotorException {
-        estado.saltarWarp();
+        Posicion posicionSiguiente;
+        for (int i = 0; i < pasos; i++)
+            posicionSiguiente = ruta.remove(0);
+
+        tablero.moverNave(posicionSiguiente);
     }
 
-    public void cancelarSalto() throws MotorException {
-        estado.cancelarSalto();
-    } //qué pasa con el combustible si se cancela el salto?
 
     public boolean consultaMotorDisponible(){
         return estado.motorDisponible();

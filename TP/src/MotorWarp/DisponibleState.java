@@ -1,8 +1,9 @@
 package src.MotorWarp;
 
-import src.AC.Bitacora;
+import src.destinoytablero.Posicion;
+import src.destinoytablero.Tablero;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class DisponibleState implements MotorState {
 
@@ -15,34 +16,38 @@ public class DisponibleState implements MotorState {
     }
 
     @Override
-    public void saltarWarp() throws MotorException {
-        this.prepararSalto();
+    public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
+        this.prepararWarp();
+        this.motorWarp.mover(tablero, ruta, 1);
     }
 
     @Override
-    public void prepararSalto() {
+    public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
+        //Warp no inicializado, se salta normal
+        this.saltar(tablero, ruta);
+    }
+
+    @Override
+    public void prepararWarp() {
         motorWarp.setEstado(new PreparandoState(motorWarp));
     }
 
     @Override
-    public void saltar() throws TransicionInvalidaException {
+    public void iniciarWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("No se puede saltar sin antes preparar");
     }
 
     @Override
-    public void ejecutarSalto() throws TransicionInvalidaException {
+    public void ejecutandoWarp(Tablero tablero, ArrayList<Posicion> ruta) throws TransicionInvalidaException {
         throw new TransicionInvalidaException("No hubo salto; no se debe finalizar");
     }
 
     @Override
-    public void enfriar() throws TransicionRedundanteException {
+    public void enfriarWarp() throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Motor ya disponible");
     }
 
-    @Override
-    public void cancelarSalto() throws TransicionInvalidaException {
-        throw new TransicionInvalidaException("Cancelación de salto inválida: no se está ejecutando un salto");
-    }
+
 
     @Override
     public boolean motorDisponible() {

@@ -8,9 +8,9 @@ import src.destinoytablero.Tablero;
 import java.util.ArrayList;
 
 public abstract class Mision {
-    protected int combNecesario;
-    protected int energiaNecesaria;
-    protected int desgasteEsperado;
+    protected int combustibleBase;
+    protected int energiaBase;
+    protected int desgasteBase;
     protected Asistente ac;
     protected Destino destino;
     protected Tablero tablero;
@@ -28,9 +28,9 @@ public abstract class Mision {
      * Postcondiciones: la misión queda creada
      */
     public Mision(int combustible, int energia, int desgaste, Asistente ac, Destino destino, Tablero tablero){
-        this.combNecesario= combustible;
-        this.energiaNecesaria = energia;
-        this.desgasteEsperado = desgaste;
+        this.combustibleBase = combustible;
+        this.energiaBase = energia;
+        this.desgasteBase = desgaste;
         this.ac = ac;
         this.destino = destino;
         this.tablero = tablero;
@@ -38,7 +38,7 @@ public abstract class Mision {
 
     @Override
     public String toString() {
-        return "Mision{Combustible necesario=" + combNecesario +", Energia necesaria=" + energiaNecesaria +", Desgaste=" + desgasteEsperado + '}';
+        return "Mision{Combustible necesario=" + combustibleBase +", Energia necesaria=" + energiaBase +", Desgaste=" + desgasteBase + '}';
     }
 
 
@@ -70,7 +70,7 @@ public abstract class Mision {
      */
     protected void preparar() throws PrepMisionException{
         //Verificación inicial
-        if (!(ac.getCombustibleNave() >= combNecesario && ac.getEnergiaNave() >= energiaNecesaria))
+        if (!(ac.getCombustibleNave() >= combustibleBase && ac.getEnergiaNave() >= energiaBase))
             throw new PrepMisionException("Recursos insuficientes");
         if (ac.consultaReqMantenimiento())
             throw new PrepMisionException("La nave necesita mantenimiento");
@@ -121,7 +121,28 @@ public abstract class Mision {
     /**
      * Ejecuta la mision
      */
-    protected abstract void ejecutar();
+    protected final void ejecutar() {
+        ac.despegue(this.combustibleBase, this.energiaBase, this.desgasteBase);
+        this.cicloDeTravesia();
+    }
+
+    private void cicloDeTravesia() {
+        try {
+            while (!tablero.getPosicionNave().equals(objetivo)){
+                ac.inspeccionarPosicionActual(this.tablero);
+                ac.movimiento(this.tablero, this.ruta);
+                destino.turnoDestino();
+                Thread.sleep(1000);
+            }
+        } catch (Exception e){
+
+        }
+    }
+
+
+    private void turnoDeLaNave(){
+
+    }
 
     /**
      * Evalúa los resultados de la misión

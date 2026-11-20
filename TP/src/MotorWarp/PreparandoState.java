@@ -1,5 +1,10 @@
 package src.MotorWarp;
 
+import src.destinoytablero.Posicion;
+import src.destinoytablero.Tablero;
+
+import java.util.ArrayList;
+
 public class PreparandoState implements MotorState {
 
     private MotorWarp motorWarp;
@@ -10,36 +15,39 @@ public class PreparandoState implements MotorState {
     }
 
     @Override
-    public void saltarWarp() throws MotorException {
-        this.saltar();
+    public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
+        this.iniciarWarp();
+        this.motorWarp.mover(tablero, ruta, 1);
     }
 
     @Override
-    public void prepararSalto() throws TransicionRedundanteException {
+    public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
+        //Warp no inicializado, se salta normal
+        this.saltar(tablero, ruta);
+    }
+
+    @Override
+    public void prepararWarp() throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Preparación de salto ya en curso");
     }
 
     @Override
-    public void saltar() {
+    public void iniciarWarp() {
         if (motorWarp.energiaSuficiente())
             motorWarp.setEstado(new EjecutandoSaltoWarpState(motorWarp));
     }
 
     @Override
-    public void ejecutarSalto() throws TransicionInvalidaException {
+    public void ejecutandoWarp(Tablero tablero, ArrayList<Posicion> ruta) throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Preparando salto: no se puede finalizar");
     }
 
     @Override
-    public void enfriar() throws TransicionInvalidaException {
+    public void enfriarWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Preparando salto: motor no disponible");
     }
 
-    @Override
-    public void cancelarSalto() throws TransicionInvalidaException {
-        motorWarp.setEstado(new DisponibleState(motorWarp));
-        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp, al estar en Preparacion vuelve a Disponible");
-    }
+
 
     @Override
     public boolean motorDisponible() {

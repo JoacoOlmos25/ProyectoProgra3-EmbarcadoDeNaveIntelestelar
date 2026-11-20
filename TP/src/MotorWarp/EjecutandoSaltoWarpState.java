@@ -1,5 +1,10 @@
 package src.MotorWarp;
 
+import src.destinoytablero.Posicion;
+import src.destinoytablero.Tablero;
+
+import java.util.ArrayList;
+
 public class EjecutandoSaltoWarpState implements MotorState {
 
     private MotorWarp motorWarp;
@@ -9,43 +14,44 @@ public class EjecutandoSaltoWarpState implements MotorState {
         this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","El Motor warp esta activo y en curso");
     }
 
-    @Override
-    public void saltarWarp() throws MotorException {
-        this.ejecutarSalto();
+    public void saltar(Tablero tablero, ArrayList<Posicion> ruta){
+        this.motorWarp.mover(tablero, ruta, 1);
     }
 
     @Override
-    public void prepararSalto() throws TransicionInvalidaException {
+    public void saltarWarp(Tablero tablero, ArrayList<Posicion> ruta) throws MotorException {
+        this.ejecutandoWarp(tablero, ruta);
+    }
+
+    @Override
+    public void prepararWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Warp en curso: no se puede preparar un nuevo salto");
     }
 
     @Override
-    public void saltar() throws TransicionRedundanteException {
+    public void iniciarWarp() throws TransicionRedundanteException {
         throw new TransicionRedundanteException("Warp en curso: no se puede realizar un nuevo salto");
     }
 
     @Override
-    public void ejecutarSalto() {
+    public void ejecutandoWarp(Tablero tablero, ArrayList<Posicion> ruta) {
         if (motorWarp.energiaSuficiente()) {
             motorWarp.consumeEnergiaPorSalto();
-            //TODO: mueve la nave
+            motorWarp.mover(tablero, ruta, 2);
             motorWarp.setEstado(new EnfriandoState(motorWarp));
         }
-        else {                                                              //debería lanzarse excepción y catchearse acá?
+        else {
+            //energía insuficiente, se "desinicializa" Warp y vuelve a preparando
             motorWarp.setEstado(new PreparandoState(motorWarp));
         }
     }
 
     @Override
-    public void enfriar() throws TransicionInvalidaException {
+    public void enfriarWarp() throws TransicionInvalidaException {
         throw new TransicionInvalidaException("Warp en curso: motor no disponible");
     }
 
-    @Override
-    public void cancelarSalto() {
-        motorWarp.setEstado(new DisponibleState(motorWarp));
-        this.motorWarp.registrarEventoMotor("Cambio de estado del Motor Warp","Se cancelo el salto del Motor warp");
-    }
+
 
     @Override
     public boolean motorDisponible() {
