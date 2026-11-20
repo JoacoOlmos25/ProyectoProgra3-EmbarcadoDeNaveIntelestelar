@@ -13,14 +13,26 @@ import java.time.LocalDateTime;
  **/
 public class Evento {
 
-    public LocalDateTime horario;
-    public String titulo;
-    public String msj;
+    private final LocalDateTime horario;
+    private final String titulo;
+    private final String msj;
 
     public Evento(LocalDateTime t,String titulo,String msj){
         this.horario = t;
         this.titulo = titulo;
         this.msj = msj;
+    }
+
+    public LocalDateTime getHorario() {
+        return horario;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getMsj() {
+        return msj;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package src.Tripulacion;
 
 public class Terricola extends DecoratorTrip {
-    private Tripulante tripu;
-
     /**Contrato
         *Este es para un tripulante con cargo le asigna como origen Terricola
         *Precondiciones
@@ -12,8 +10,7 @@ public class Terricola extends DecoratorTrip {
     */
 
     public Terricola(Tripulante tripu){
-        super();
-        this.tripu = tripu;
+        super(tripu);
     }
 
     /**Contrato

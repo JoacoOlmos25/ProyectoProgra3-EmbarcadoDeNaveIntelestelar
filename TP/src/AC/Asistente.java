@@ -7,7 +7,9 @@ import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 import src.nave.Comandable;
 import src.nave.Nave;
-
+import java.util.List;
+import src.Tripulacion.Tripulante;
+import src.nave.MantenimientoException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -66,7 +68,30 @@ public class Asistente {
             this.nave.saltarWarp(tablero, ruta);
 
     }
+    public int getDesgasteNave() {
+        return nave.getDesgaste();
+    }
 
+    public String getTipoNave() {
+        return nave.getClass().getSimpleName();
+    }
+
+    public void insertarTripulante(Tripulante t) {
+        nave.insertarTripulante(t);
+    }
+
+    public List<Tripulante> getTripulacion() {
+        return nave.getTripulacion();
+    }
+
+    public void realizarMantenimiento() throws MantenimientoException {
+        nave.realizarMantenimiento();
+        registrarEvento("Mantenimiento", "Mantenimiento completado. Desgaste reiniciado a 0%.");
+    }
+
+    public List<Evento> getEventosBitacora() {
+        return bitacora.getEventos();
+    }
 
     public void mostrarBitacora(){
         bitacora.mostrarBitacora();

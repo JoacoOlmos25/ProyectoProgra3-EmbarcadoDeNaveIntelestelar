@@ -13,8 +13,14 @@ public class Capitan extends Tripulante {
 
     public Capitan(int antiguedad, String ident) throws AntiguedadNegativa {
         super();
+        assert ident != null && !ident.isBlank() : "La identidad del capitán no puede ser nula ni vacía";
         setAntiguedad(antiguedad);
         this.ident = ident;
+    }
+
+    @Override
+    public boolean esCapitan() {
+        return true;
     }
     /**
      * Calcula la remuneracion correspondiente del Capitan.

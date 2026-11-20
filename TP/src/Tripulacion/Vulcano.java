@@ -1,8 +1,6 @@
 package src.Tripulacion;
 
 public class Vulcano extends DecoratorTrip {
-    private Tripulante tripu;
-
     /**Contrato
         *Este es para un tripulante con cargo le asigna como origen Vulcano
         *Precondiciones
@@ -12,8 +10,7 @@ public class Vulcano extends DecoratorTrip {
      */
 
     public Vulcano(Tripulante tripu){
-        super();
-        this.tripu = tripu;
+        super(tripu);
     }
 
     /**Contrato

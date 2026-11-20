@@ -1,4 +1,5 @@
 package src.nave;
+
 import src.AC.Bitacora;
 import src.ElementosDelUniverso.ColisionException;
 import src.MotorWarp.MotorException;
@@ -9,12 +10,15 @@ import src.destinoytablero.Tablero;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class Nave implements Comandable {
     //constantes de nave
     private final int capMaxCombustible = 100;
     private final int capMaxEnergia = 100;
-    //atributos comunes de nave
+
+    // Atributos comunes de nave
     private int combustible;
     private int energia;
     private int desgaste;
@@ -22,25 +26,35 @@ public abstract class Nave implements Comandable {
     protected MotorWarp motorWarp;
     protected Bitacora bitacoraNave;
 
-
     /**
-     * Contrato
-     * Creacion de la nave con sus atributos base (combustible, energia, desgaste, estado motor warp)
-     * Precondicion
-     * - Ninguna adicional (los datos ya están garantizados por el invariante de la clase).
-     * Invariante de clase
-     * -Combustible y energia deben ser mayor a 0
-     * -Desgaste se inicializa en 0
-     * -El estado del motor warp se inicia en disponible
-     * Postcondicion
-     * Devuelve la nave con todos los recursos y estados cargados
+     * Contrato:
+     * Creación de la nave con sus atributos base (combustible, energía, desgaste, estado motor warp).
+     * Precondición:
+     * - 0 <= combInicial <= capMaxCombustible
+     * - 0 <= eInicial <= capMaxEnergia
+     * Invariante de clase:
+     * - 0 <= combustible <= capMaxCombustible
+     * - 0 <= energia <= capMaxEnergia
+     * - 0 <= desgaste <= 100
+     * Postcondición:
+     * - Devuelve la nave con todos los recursos y el motor warp disponible.
      */
-
     public Nave(int combInicial, int eInicial) {
+        assert combInicial >= 0 && combInicial <= capMaxCombustible : "Combustible inicial fuera de rango";
+        assert eInicial >= 0 && eInicial <= capMaxEnergia : "Energía inicial fuera de rango";
+
         this.combustible = combInicial;
         this.energia = eInicial;
         this.desgaste = 0;
         this.motorWarp = new MotorWarp(this, this);
+
+        verificarInvariantes();
+    }
+
+    private void verificarInvariantes() {
+        assert this.combustible >= 0 && this.combustible <= capMaxCombustible : "Invariante de combustible violado";
+        assert this.energia >= 0 && this.energia <= capMaxEnergia : "Invariante de energía violado";
+        assert this.desgaste >= 0 && this.desgaste <= 100 : "Invariante de desgaste violado";
     }
 
     @Override
@@ -58,42 +72,46 @@ public abstract class Nave implements Comandable {
         return this.desgaste;
     }
 
-    /**
-     * Contrato
-     * Precondicion
-     * Cantidad es positiva
-     * Postcondicion
-     * Disminuye el combustible en la cantidad pasada
-     *
-     * @throws RecursosInsuficientesException si cantidad > combustible disponible
-     */
-
-    @Override
-    public void consumirCombustible(int cantidad) throws RecursosInsuficientesException {
-        if (this.combustible > cantidad) {
-            this.combustible -= cantidad;
-        } else {
-            throw new RecursosInsuficientesException("Combustible insuficiente");
-        }
+    public List<Tripulante> getTripulacion() {
+        return Collections.unmodifiableList(this.tripulacion);
     }
 
     /**
-     * Contrato
-     * Precondicion
-     * Cantidad es positiva
-     * Postcondicion
-     * Disminuye la energia en la cantidad pasada
-     *
+     * Precondición: cantidad > 0
+     * Postcondición: combustible == combustible_anterior - cantidad
      * @throws RecursosInsuficientesException si cantidad > combustible disponible
      */
+    @Override
+    public void consumirCombustible(int cantidad) throws RecursosInsuficientesException {
+        assert cantidad > 0 : "La cantidad de combustible a consumir debe ser positiva";
 
+        if (this.combustible < cantidad) {
+            throw new RecursosInsuficientesException("Combustible insuficiente");
+        }
+        int anterior = this.combustible;
+        this.combustible -= cantidad;
+
+        assert this.combustible == anterior - cantidad : "Postcondición violada al consumir combustible";
+        verificarInvariantes();
+    }
+
+    /**
+     * Precondición: cantidad > 0
+     * Postcondición: energia == energia_anterior - cantidad
+     * @throws RecursosInsuficientesException si cantidad > energía disponible
+     */
     @Override
     public void consumirEnergia(int cantidad) throws RecursosInsuficientesException {
-        if (this.energia > cantidad) {
-            this.energia -= cantidad;
-        } else {
+        assert cantidad > 0 : "La cantidad de energía a consumir debe ser positiva";
+
+        if (this.energia < cantidad) {
             throw new RecursosInsuficientesException("Energía insuficiente");
         }
+        int anterior = this.energia;
+        this.energia -= cantidad;
+
+        assert this.energia == anterior - cantidad : "Postcondición violada al consumir energía";
+        verificarInvariantes();
     }
 
     @Override
@@ -111,122 +129,135 @@ public abstract class Nave implements Comandable {
         this.energia += Math.min(cantidadEnergia, this.capMaxEnergia - this.energia);
     }
 
+
     /**
-     * Contrato
-     * Precondicion
-     * Comprueba si es necesario realizar mantenimiento en la nave
-     * Postcondicion
-     * Devuelve la nave en perfecto estado
-     *
+     * Precondición: la nave requiere mantenimiento (desgaste >= 80)
+     * Postcondición: desgaste == 0
      * @throws MantenimientoException si la nave no requiere mantenimiento
      */
     @Override
     public void realizarMantenimiento() throws MantenimientoException {
-
         if (this.requiereMantenimiento()) {
             this.desgaste = 0;
-        } else
-            throw new MantenimientoException("La nave no necesita mantenimiento");//la aparte
+        } else {
+            throw new MantenimientoException("La nave no necesita mantenimiento");
+        }
+
+        assert this.desgaste == 0 : "Postcondición violada al realizar mantenimiento";
+        verificarInvariantes();
     }
 
-
     /**
-     * Evalúa si la nave requiere mantenimiento según los límites de desgaste establecidos
-     *
-     * @return true si la nave necesita mantenimiento, falso en caso contrario
+     * Evalúa si la nave requiere mantenimiento según los límites de desgaste establecidos.
+     * @return true si la nave necesita mantenimiento, false en caso contrario.
      */
     @Override
     public boolean requiereMantenimiento() {
         return this.desgaste >= 80;
     }
 
-
     /**
-     * Consulta si el motor Warp está disponible
-     *
-     * @return true si el motor está disponible
+     * Consulta si el motor Warp está disponible.
+     * @return true si el motor está disponible.
      */
     @Override
     public boolean consultarMotorDisponible() {
         return motorWarp.consultaMotorDisponible();
     }
 
-
     /**
-     * Contrato
-     * Precondicion
-     * Cant es positiva
-     * Postcondicion
-     * Incrementa el desgaste en la cantidad indicada
-     *
-     * @throws MantenimientoException si incrementar el desgaste en la cantidad indicada supera el límite (100)
+     * Precondición: cant > 0
+     * Postcondición: desgaste == desgaste_anterior + cant
+     * @throws MantenimientoException si incrementar el desgaste supera el límite (100)
      */
     @Override
     public void incrementaDesgaste(int cant) throws MantenimientoException {
+        assert cant > 0 : "La cantidad de desgaste a incrementar debe ser positiva";
 
         if ((this.desgaste + cant) > 100) {
             throw new MantenimientoException("Desgaste por encima del permitido");
-        } else {
-            this.desgaste += cant;
         }
+        int anterior = this.desgaste;
+        this.desgaste += cant;
+
+        assert this.desgaste == anterior + cant : "Postcondición violada al incrementar desgaste";
+        verificarInvariantes();
     }
 
     @Override
     public void setBitacora(Bitacora b) {
+        assert b != null : "La bitácora no puede ser nula";
         this.bitacoraNave = b;
-        this.motorWarp.setBitacora(b); // Le pasamos la referencia al motor
+        this.motorWarp.setBitacora(b);
     }
 
     /**
-     * Contrato
-     * Precondicion
-     * t debe tener una tripulacion
-     * Postcondicion
-     * Devuelve dentro de la nave el nuevo tripulante
+     * Incorpora un tripulante a la nave preservando identidad única y capitán único.
      */
-
     public void insertarTripulante(Tripulante t) {
-        if (t == null)
+        if (t == null) {
             throw new NoexisteTripulanteException("El tripulante no puede ser nulo");
-        if (tripulacion.contains(t))
-            throw new IllegalArgumentException("El tripulante ya esta abordo");
-        //cuadno se haga el motor warp con los estados podria poner validacion de no agregar tripulaion en pleno salto
+        }
+        if (tripulacion.contains(t)) {
+            throw new IllegalArgumentException("Ya existe un tripulante con esa identidad a bordo");
+        }
+        if (t.esCapitan() && tieneCapitan()) {
+            throw new IllegalArgumentException("La nave ya cuenta con un capitán a bordo");
+        }
 
         tripulacion.add(t);
-        this.bitacoraNave.agregaEvento(LocalDateTime.now(), "Se agrega un Tripulante", t.toString() + " Remuneracion total=" + t.getRemu() + "}");
+        if (this.bitacoraNave != null) {
+            this.bitacoraNave.agregaEvento(
+                    LocalDateTime.now(),
+                    "Se agrega un Tripulante",
+                    t.toString() + " Remuneracion total=" + t.getRemu() + "}"
+            );
+        }
     }
 
-//    Una carga de combustible o energía no podrá superar la capacidad máxima. Una operación que no pueda
-//    completarse sin violar un límite deberá rechazarse sin modificar parcialmente la nave
+    private boolean tieneCapitan() {
+        for (Tripulante existente : this.tripulacion) {
+            if (existente.esCapitan()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
-     * Contrato
-     * Precondicion
-     * Cant es positiva
-     * Postcondicion
-     * Devuelve la nave cargada con la nueva cantidad de combustible
+     * Precondición: cant > 0
+     * Postcondición: combustible == combustible_anterior + cant
      */
     @Override
     public void cargarCombustible(int cant) {
+        assert cant > 0 : "La cantidad de combustible a cargar debe ser positiva";
+
         if ((this.combustible + cant) > capMaxCombustible) {
             throw new ExcesoRecursoException("Se excede de la capacidad maxima");
         }
+        int anterior = this.combustible;
         this.combustible += cant;
+
+        assert this.combustible == anterior + cant : "Postcondición violada al cargar combustible";
+        verificarInvariantes();
     }
 
     /**
-     * Contrato
-     * Precondicion
-     * Cant es positiva
-     * Postcondicion
-     * Devuelve la nave cargada con la nueva cantidad de energia
+     * Precondición: cant > 0
+     * Postcondición: energia == energia_anterior + cant
      */
     @Override
     public void cargarEnergia(int cant) {
+        assert cant > 0 : "La cantidad de energía a cargar debe ser positiva";
+
         if ((this.energia + cant) > capMaxEnergia) {
-            throw new ExcesoRecursoException("Se escede de la capacidad maxima");
+            throw new ExcesoRecursoException("Se excede de la capacidad maxima");
         }
+        int anterior = this.energia;
         this.energia += cant;
+
+        assert this.energia == anterior + cant : "Postcondición violada al cargar energía";
+        verificarInvariantes();
     }
 
 
