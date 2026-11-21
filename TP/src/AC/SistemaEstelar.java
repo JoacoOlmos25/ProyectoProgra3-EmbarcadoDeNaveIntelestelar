@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import src.destinoytablero.Posicion;
+import src.Misiones.Mision;
+import src.Misiones.MisionFactory;
 import src.Tripulacion.AntiguedadNegativa;
 import src.Tripulacion.Tripulante;
 import src.Tripulacion.TripulanteFactory;
-import src.destinoytablero.Posicion;
+import src.destinoytablero.Destino;
 import src.destinoytablero.Tablero;
 import src.nave.MantenimientoException;
 import src.nave.Nave;
@@ -15,50 +18,92 @@ import src.nave.NaveFactory;
 
 /**
  * Modelo de la aplicación (Fachada).
- * Encapsula la flota, la nave activa, las fábricas y el tablero del universo.
+ * Encapsula la flota, la nave activa, las fábricas, el tablero del universo y su destino.
  * Desconoce por completo la existencia de vistas y controladores.
  */
 public class SistemaEstelar {
 
     private final NaveFactory naveFactory;
     private final TripulanteFactory tripulanteFactory;
+    private final MisionFactory misionFactory;
     private final Tablero tablero;
+    private final Destino destino;
 
     private final List<Asistente> flota;
     private final List<String> nombresFlota;
+    /** Última posición conocida de cada nave de la flota (mismo índice que flota). */
+    private final List<Posicion> posicionesFlota;
     private int indiceActivo = -1;
+
 
     public SistemaEstelar(Tablero tablero) {
         assert tablero != null : "El tablero no puede ser nulo";
         this.tablero = tablero;
+        this.destino = new Destino(tablero);
         this.naveFactory = new NaveFactory();
         this.tripulanteFactory = new TripulanteFactory();
+        this.misionFactory = new MisionFactory();
         this.flota = new ArrayList<>();
         this.nombresFlota = new ArrayList<>();
+        this.posicionesFlota = new ArrayList<>();
     }
 
     public Tablero getTablero() {
         return tablero;
     }
 
+    /**
+     * Crea una nave del tipo indicado, la incorpora a la flota y la deja como activa en la base de origen.
+     * Precondiciones: no hay una misión en curso
+     * Postcondiciones: la nave anterior conserva su posición; la nueva queda activa y ubicada en la base del tablero
+     * @param tipo tipo de nave ("Explorador", "Carguero" o "Ataque")
+     * @return etiqueta de la nave creada
+     * @throws IllegalArgumentException si el tipo de nave es desconocido (la flota no cambia)
+     */
     public String crearNave(String tipo) {
         Nave nuevaNave = naveFactory.crearNave(tipo);
         Asistente nuevoAsistente = new Asistente(nuevaNave);
         String etiqueta = tipo + " #" + (flota.size() + 1);
 
+        guardarPosicionActiva();
         nuevoAsistente.registrarEvento("Alta de Nave", "Se incorporó " + etiqueta + " a la flota.");
         flota.add(nuevoAsistente);
         nombresFlota.add(etiqueta);
+        posicionesFlota.add(tablero.getPosicionBase());
         indiceActivo = flota.size() - 1;
+        tablero.moverNave(posicionesFlota.get(indiceActivo));
+
+        assert flota.size() == nombresFlota.size() && flota.size() == posicionesFlota.size()
+                : "Las listas de la flota quedaron desalineadas";
         return etiqueta;
     }
 
+    /**
+     * Cambia la nave activa, guardando la posición de la anterior y ubicando en el tablero a la nueva.
+     * Precondiciones: no hay una misión en curso
+     * Postcondiciones: si el índice es válido y distinto del activo, la nave anterior conserva su posición
+     *                  y la nave del tablero pasa a la última posición conocida de la nave seleccionada
+     * @param indice posición de la nave en la flota
+     * @return true si se cambió la nave activa, false en caso contrario
+     */
     public boolean seleccionarNave(int indice) {
         if (indice < 0 || indice >= flota.size() || indice == indiceActivo) {
             return false;
         }
+        guardarPosicionActiva();
         indiceActivo = indice;
+        tablero.moverNave(posicionesFlota.get(indiceActivo));
         return true;
+    }
+
+    /**
+     * Guarda la posición actual del tablero como la última posición conocida de la nave activa
+     * Postcondiciones: si hay nave activa, su posición guardada coincide con la posición de la nave en el tablero
+     */
+    private void guardarPosicionActiva() {
+        if (hayNaveActiva()) {
+            posicionesFlota.set(indiceActivo, tablero.getPosicionNave());
+        }
     }
 
     public String agregarTripulante(String cargo, String origen, int antiguedad, String ident)
@@ -76,45 +121,17 @@ public class SistemaEstelar {
     }
 
     /**
-     * Valida las condiciones previas de despegue y calcula la ruta planificada
-     * (punto de enganche para delegar luego al objeto Mision definitivo).
+     * Crea la misión indicada para la nave activa, sobre el tablero y el destino del sistema.
+     * Precondiciones: codigo es "M-01", "M-02" o "M-03"
+     * Postcondiciones: devuelve una misión nueva, todavía no realizada; el estado del sistema no cambia
+     * @param codigo código de la misión
+     * @return misión lista para invocar realizarMision() desde un hilo secundario
+     * @throws IllegalStateException si no hay una nave activa
+     * @throws IllegalArgumentException si el código de misión es desconocido
      */
-    public List<Posicion> prepararRutaMision() {
+    public Mision crearMision(String codigo) {
         Asistente ac = exigirAsistenteActivo();
-        if (ac.consultaReqMantenimiento()) {
-            throw new IllegalStateException("La nave requiere mantenimiento (desgaste >= 80%) antes de despegar.");
-        }
-        Posicion origen = tablero.getPosicionNave();
-        Posicion destino = tablero.obtenerObjetivo();
-        return calcularRuta(origen, destino);
-    }
-
-    private List<Posicion> calcularRuta(Posicion inicio, Posicion fin) {
-        List<Posicion> ruta = new ArrayList<>();
-        int f = inicio.getX();
-        int c = inicio.getY();
-        ruta.add(new Posicion(f, c));
-        while (f != fin.getX() || c != fin.getY()) {
-            if (f < fin.getX()) f++;
-            else if (f > fin.getX()) f--;
-            if (c < fin.getY()) c++;
-            else if (c > fin.getY()) c--;
-            ruta.add(new Posicion(f, c));
-        }
-        return ruta;
-    }
-
-    public String generarResumenInforme(String mision, Posicion origen, Posicion destino, int encuentros) {
-        Asistente ac = exigirAsistenteActivo();
-        return "Nave: " + getNombreNaveActiva() + "\n"
-                + "Misión ejecutada: " + mision + "\n"
-                + "Trayectoria: (" + origen.getX() + ", " + origen.getY() + ") -> ("
-                + destino.getX() + ", " + destino.getY() + ")\n"
-                + "Encuentros registrados: " + encuentros + "\n"
-                + "Estado final -> Combustible: " + ac.getCombustibleNave()
-                + " | Energía: " + ac.getEnergiaNave()
-                + " | Desgaste: " + ac.getDesgasteNave() + "%\n"
-                + "Motor Warp disponible: " + (ac.consultaMotorDisp() ? "SÍ" : "NO");
+        return misionFactory.crearMision(codigo, ac, destino, tablero);
     }
 
     public void registrarEventoActivo(String titulo, String msj) {

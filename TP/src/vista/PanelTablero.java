@@ -10,7 +10,7 @@ import java.awt.RenderingHints;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.JPanel;
-import src.destinoytablero.ElementoDelUniverso;
+import src.ElementosDelUniverso.ElementoDelUniverso;
 import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 import java.awt.geom.AffineTransform;

@@ -2,11 +2,14 @@ package src.controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
-import javax.swing.Timer;
+import java.util.function.Supplier;
 
 import src.AC.Asistente;
 import src.AC.SistemaEstelar;
+import src.Misiones.Mision;
+import src.Misiones.ObservadorMision;
 import src.Tripulacion.AntiguedadNegativa;
 import src.concurrencia.controlador.ControladorVisor;
 import src.concurrencia.modelo.PlataformaDeCarga;
@@ -21,14 +24,19 @@ import src.vista.IVistaPrincipal;
 /**
  * Controlador principal de la interfaz de comando (MVC).
  * Además implementa Observador sobre el Tablero para sincronizar automáticamente
- * la telemetría de la nave y el indicador de turno en cada paso de la simulación.
+ * la telemetría de la nave y el indicador de turno en cada paso de la simulación,
+ * y ObservadorMision para recibir la ruta planificada y los encuentros de la misión en curso.
  */
-public class ControladorPrincipal implements ActionListener, Observador {
+public class ControladorPrincipal implements ActionListener, Observador, ObservadorMision {
+
+    /** Duración en pantalla del popup de colisión. */
+    private static final int DURACION_POPUP_MS = 2200;
 
     private final IVistaPrincipal vista;
     private final SistemaEstelar modelo;
 
-    private boolean misionEnCurso = false;
+    /** Lo modifica el hilo de la misión y lo lee el hilo de Swing. */
+    private volatile boolean misionEnCurso = false;
     private VentanaVisorUniverso ventanaConcurrencia;
 
     public ControladorPrincipal(IVistaPrincipal vista, SistemaEstelar modelo) {
@@ -71,6 +79,22 @@ public class ControladorPrincipal implements ActionListener, Observador {
                     IVistaPrincipal.TURNO_UNIVERSO
             );
         }
+    }
+
+    // =========================================================================
+    // OBSERVADOR DE LA MISIÓN (se invoca desde el hilo de la misión)
+    // =========================================================================
+
+    @Override
+    public void rutaPlanificada(List<Posicion> ruta) {
+        vista.actualizarRutaPredefinida(ruta);
+        vista.agregarEntradaBitacora("[MISIÓN] Ruta planificada: " + ruta.size() + " pasos.");
+    }
+
+    @Override
+    public void interaccionDetectada(String titulo, String detalle) {
+        vista.mostrarPopupColision(titulo, detalle, DURACION_POPUP_MS);
+        vista.agregarEntradaBitacora("[ENCUENTRO] " + detalle);
     }
 
     // =========================================================================
@@ -119,6 +143,7 @@ public class ControladorPrincipal implements ActionListener, Observador {
             String etiqueta = modelo.crearNave(tipo);
             vista.actualizarFlota(modelo.getNombresFlota(), modelo.getIndiceActivo());
             refrescarVistaNaveActiva();
+            refrescarTableroNaveActiva();
             vista.agregarEntradaBitacora("[SISTEMA] " + etiqueta + " creada y seleccionada como activa.");
         } catch (IllegalArgumentException ex) {
             vista.mostrarMensajeError("Error al crear nave: " + ex.getMessage());
@@ -129,6 +154,7 @@ public class ControladorPrincipal implements ActionListener, Observador {
         int indice = vista.getIndiceNaveSeleccionada();
         if (modelo.seleccionarNave(indice)) {
             refrescarVistaNaveActiva();
+            refrescarTableroNaveActiva();
             vista.agregarEntradaBitacora("--- Cambio de nave activa a: " + modelo.getNombreNaveActiva() + " ---");
         }
     }
@@ -181,37 +207,43 @@ public class ControladorPrincipal implements ActionListener, Observador {
         }
 
         String misionElegida = vista.getMisionSeleccionada();
-        Tablero tablero = modelo.getTablero();
-        Posicion origen = tablero.getPosicionNave();
-
-        List<Posicion> ruta;
+        Mision mision;
         try {
-            ruta = modelo.prepararRutaMision();
-        } catch (IllegalStateException ex) {
+            mision = modelo.crearMision(extraerCodigoMision(misionElegida));
+        } catch (IllegalStateException | IllegalArgumentException ex) {
             vista.mostrarMensajeError(ex.getMessage());
             return;
         }
 
-        Posicion destino = tablero.getObjetivo();
-        vista.actualizarPuntoOrigen(origen);
-        vista.actualizarRutaPredefinida(ruta);
-        modelo.registrarEventoActivo("Inicio de Misión", misionElegida + " hacia (" + destino.getX() + "," + destino.getY() + ")");
-        vista.agregarEntradaBitacora("[MISIÓN] Iniciando " + misionElegida + " | Ruta planificada: " + ruta.size() + " pasos.");
+        mision.setObservador(this);
+        String nombreNave = modelo.getNombreNaveActiva();
 
-        // ---------------------------------------------------------------------
-        // PUNTO DE ENGANCHE PARA MISIONES DEFINITIVAS (ver docs/GUIA_INTEGRACION_EQUIPO.md)
-        // Reemplazar ejecutarRecorridoTemporal(...) por ejecutarMisionEnHilo(...)
-        // cuando Mision_01/02/03 + Destino estén integrados en SistemaEstelar.
-        // ---------------------------------------------------------------------
-        ejecutarRecorridoTemporal(misionElegida, origen, destino, ruta);
+        vista.actualizarPuntoOrigen(modelo.getTablero().getPosicionNave());
+        vista.actualizarRutaPredefinida(Collections.emptyList()); // la ruta nueva llega por rutaPlanificada(...)
+        modelo.registrarEventoActivo("Inicio de Misión", misionElegida);
+        vista.agregarEntradaBitacora("[MISIÓN] Iniciando " + misionElegida + " con " + nombreNave);
+
+        // Nunca llamar a realizarMision() acá directamente: el Thread.sleep congelaría Swing
+        ejecutarMisionEnHilo(misionElegida, mision::realizarMision,
+                () -> "Nave: " + nombreNave + "\n" + mision.getInformeFinal());
     }
 
     /**
-     * Plantilla lista para ejecutar mision.realizarMision() sin congelar Swing
+     * Obtiene el código de misión ("M-01") a partir de la etiqueta del combo ("M-01: Intercepción y Asistencia").
+     */
+    private String extraerCodigoMision(String etiqueta) {
+        if (etiqueta == null) {
+            return "";
+        }
+        int separador = etiqueta.indexOf(':');
+        return separador >= 0 ? etiqueta.substring(0, separador) : etiqueta;
+    }
+
+    /**
+     * Ejecuta mision.realizarMision() sin congelar Swing
      * (debido a los Thread.sleep(int) internos del bucle de turnos).
      */
-    @SuppressWarnings("unused")
-    private void ejecutarMisionEnHilo(String misionElegida, Runnable ejecucionMision, java.util.function.Supplier<String> proveedorInforme) {
+    private void ejecutarMisionEnHilo(String misionElegida, Runnable ejecucionMision, Supplier<String> proveedorInforme) {
         misionEnCurso = true;
         vista.setControlesOperacionHabilitados(false);
         vista.actualizarIndicadorTurno("INICIANDO MISIÓN: " + misionElegida, IVistaPrincipal.TURNO_NAVE);
@@ -233,57 +265,6 @@ public class ControladorPrincipal implements ActionListener, Observador {
         }, "Hilo-Ejecucion-Mision");
         hiloMision.setDaemon(true);
         hiloMision.start();
-    }
-
-    private void ejecutarRecorridoTemporal(String misionElegida, Posicion origen, Posicion destino, List<Posicion> ruta) {
-        Tablero tablero = modelo.getTablero();
-        misionEnCurso = true;
-        vista.setControlesOperacionHabilitados(false);
-
-        final int[] paso = {1};
-        final int[] encuentros = {0};
-        final boolean[] esTurnoNave = {true};
-
-        Timer timerMision = new Timer(550, null);
-        timerMision.addActionListener(ev -> {
-            if (paso[0] < ruta.size()) {
-                if (esTurnoNave[0]) {
-                    Posicion siguiente = ruta.get(paso[0]++);
-                    tablero.moverNave(siguiente);
-
-                    if (tablero.inspeccionarPosicion() != null) {
-                        encuentros[0]++;
-                        String tipoElem = tablero.inspeccionarPosicion().getClass().getSimpleName();
-                        modelo.registrarEventoActivo("Encuentro", "Interacción con " + tipoElem
-                                + " en (" + siguiente.getX() + "," + siguiente.getY() + ")");
-                        vista.mostrarPopupColision(
-                                "INTERACCIÓN DETECTADA",
-                                "La nave encontró [" + tipoElem + "] en (" + siguiente.getX() + ", " + siguiente.getY() + ")",
-                                2200
-                        );
-                    }
-                } else {
-                    // Simula visualmente la alternancia de turno hasta conectar Destino.avanzarTurno()
-                    vista.actualizarIndicadorTurno(
-                            "TURNO ACTIVO: UNIVERSO DINÁMICO (DESTINO)",
-                            IVistaPrincipal.TURNO_UNIVERSO
-                    );
-                }
-                esTurnoNave[0] = !esTurnoNave[0];
-            } else {
-                timerMision.stop();
-                misionEnCurso = false;
-                vista.setControlesOperacionHabilitados(true);
-                vista.actualizarIndicadorTurno("ESTADO DE TURNO: EN ESPERA DE ÓRDENES", IVistaPrincipal.TURNO_ESPERA);
-
-                String informe = modelo.generarResumenInforme(misionElegida, origen, destino, encuentros[0]);
-                modelo.registrarEventoActivo("Fin de Misión", misionElegida + " finalizada.");
-                vista.agregarInformeHistorial(informe);
-                vista.mostrarPopupInformeMision(misionElegida, informe);
-                refrescarVistaNaveActiva();
-            }
-        });
-        timerMision.start();
     }
 
     private void abrirVisorConcurrencia() {
@@ -314,4 +295,12 @@ public class ControladorPrincipal implements ActionListener, Observador {
         );
         vista.actualizarListadoTripulantes(modelo.getResumenTripulacionActiva());
     }
+    /**
+     * Sincroniza el punto de origen y la ruta del tablero con la nave activa (sin ruta planificada)
+     */
+    private void refrescarTableroNaveActiva() {
+        vista.actualizarPuntoOrigen(modelo.getTablero().getPosicionNave());
+        vista.actualizarRutaPredefinida(Collections.emptyList());
+    }
+
 }

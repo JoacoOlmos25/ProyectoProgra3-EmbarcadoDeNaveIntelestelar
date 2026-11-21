@@ -17,6 +17,7 @@ import java.util.List;
 public abstract class Mision {
     /** Pausa entre medio turno y medio turno, para que el movimiento sea visible en el proyector. */
     private static final int PAUSA_TURNO_MS = 600;
+    private ObservadorMision observador;
 
     protected int combustibleBase;
     protected int energiaBase;
@@ -60,6 +61,17 @@ public abstract class Mision {
         this.destino = destino;
         this.tablero = tablero;
     }
+
+    /**
+     * Registra quién recibe los avisos de ruta y encuentros de la misión
+     * Precondiciones: debe invocarse antes de realizarMision()
+     * Postcondiciones: los avisos de la misión se envían al observador indicado (null = sin avisos)
+     * @param observador receptor de los avisos, puede ser null
+     */
+    public void setObservador(ObservadorMision observador){
+        this.observador = observador;
+    }
+
 
     @Override
     public String toString() {
@@ -112,6 +124,9 @@ public abstract class Mision {
 
         this.ruta = calcularRuta(this.tablero.getPosicionNave(), this.objetivo);
         this.rutaPlanificada = Collections.unmodifiableList(new ArrayList<>(this.ruta));
+        if (observador != null)
+            observador.rutaPlanificada(this.rutaPlanificada);
+
     }
 
     /**
@@ -231,7 +246,8 @@ public abstract class Mision {
 
     /**
      * Interactúa con el elemento de la casilla actual, una única vez por encuentro
-     * Postcondiciones: si hay un elemento distinto al último con el que se interactuó, se registra el encuentro y se interactúa
+     * Postcondiciones: si hay un elemento distinto al último con el que se interactuó, se registra el encuentro,
+     *                  se avisa al observador y se interactúa
      * @throws ColisionException si la interacción deja a la nave en condición crítica
      */
     private void inspeccionarPosicion() throws ColisionException {
@@ -240,8 +256,13 @@ public abstract class Mision {
         if (elemento != null && elemento != ultimoElementoInteractuado){
             encuentros++;
             Posicion pos = tablero.getPosicionNave();
-            ac.registrarEvento("Encuentro", "La nave encontró un " + elemento.getClass().getSimpleName()
-                    + " en (" + pos.getX() + ", " + pos.getY() + ")");
+            String detalle = "La nave encontró [" + elemento.getClass().getSimpleName()
+                    + "] en (" + pos.getX() + ", " + pos.getY() + ")";
+
+            ac.registrarEvento("Encuentro", detalle);
+            if (observador != null)
+                observador.interaccionDetectada("INTERACCIÓN DETECTADA", detalle);
+
             ac.inspeccionarPosicionActual(this.tablero);
         }
         ultimoElementoInteractuado = elemento;

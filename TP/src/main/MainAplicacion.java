@@ -18,11 +18,11 @@ public class MainAplicacion {
     /* Cantidad de columnas del tablero inicial. */
     private static final int COLUMNAS = 10;
     /* Cantidad de asteroides que se distribuyen en el tablero inicial. */
-    private static final int CANT_ASTEROIDES = 8;
+    private static final int CANT_ASTEROIDES = 4;
     /* Cantidad de estaciones de carga que se distribuyen en el tablero inicial. */
-    private static final int CANT_ESTACIONES = 3;
+    private static final int CANT_ESTACIONES = 2;
     /** Tipos de naves enemigas que se distribuyen en el tablero inicial (una de cada uno). */
-    private static final String[] TIPOS_NAVES_ENEMIGAS = {"Ataque", "Explorador", "Carguero"};
+    private static final String[] TIPOS_NAVES_ENEMIGAS = { "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque"};
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
