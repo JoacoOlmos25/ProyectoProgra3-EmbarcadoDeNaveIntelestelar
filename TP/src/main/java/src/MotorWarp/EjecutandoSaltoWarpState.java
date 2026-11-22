@@ -38,6 +38,14 @@ public class EjecutandoSaltoWarpState implements MotorState {
         if (motorWarp.energiaSuficiente()) {
             motorWarp.consumeEnergiaPorSalto();
             motorWarp.mover(tablero, ruta, 2);
+            motorWarp.registrarEventoMotor(
+                    "Salto Warp ejecutado",
+                    "Salto hiperespacial de hasta 2 casilleros completado. Energía consumida: " + MotorWarp.COSTO_WARP_ENERGIA
+            );
+            motorWarp.registrarEventoMotor(
+                    "Salto Warp abortado",
+                    "Energía insuficiente para completar el salto (requiere > " + MotorWarp.COSTO_WARP_ENERGIA + "). El motor vuelve a preparación."
+            );
             motorWarp.setEstado(new EnfriandoState(motorWarp));
         }
         else {

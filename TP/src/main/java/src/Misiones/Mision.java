@@ -37,6 +37,9 @@ public abstract class Mision {
     private int encuentros = 0;
     private ElementoDelUniverso ultimoElementoInteractuado;
 
+    private int saltosNormales = 0;
+    private int saltosWarp = 0;
+
 
     /**
      * Crea una misión con valores determinados
@@ -225,13 +228,21 @@ public abstract class Mision {
      */
     private void turnoDeLaNave() throws MisionException {
         try {
-            //por si en el turno del universo un elemento se movió sobre la nave
             this.inspeccionarPosicion();
 
             Posicion antes = tablero.getPosicionNave();
             ac.movimiento(this.tablero, this.ruta);
-            if (!tablero.getPosicionNave().equals(antes))
+            Posicion despues = tablero.getPosicionNave();
+
+            if (!despues.equals(antes)) {
+                int distancia = Math.abs(despues.getX() - antes.getX()) + Math.abs(despues.getY() - antes.getY());
+                if (distancia >= 2) {
+                    saltosWarp++;
+                } else {
+                    saltosNormales++;
+                }
                 this.inspeccionarPosicion();
+            }
         }
         catch (ColisionException e){
             throw new MisionException(e.getMessage());
@@ -345,6 +356,12 @@ public abstract class Mision {
                 .append(" | Energía: ").append(ac.getEnergiaNave())
                 .append(" | Desgaste: ").append(ac.getDesgasteNave()).append("%\n");
         informe.append("Motor Warp disponible: ").append(ac.consultaMotorDisp() ? "SÍ" : "NO");
+        int totalSaltos = saltosNormales + saltosWarp;
+        informe.append("Turnos: ").append(turnos)
+                .append(" | Saltos: ").append(totalSaltos)
+                .append(" (Normales: ").append(saltosNormales)
+                .append(", Warp: ").append(saltosWarp).append(")")
+                .append(" | Encuentros: ").append(encuentros).append("\n");
 
         this.informeFinal = informe.toString();
         ac.registrarEvento("Misión cerrada", getNombre() + (exitosa ? " finalizó con éxito" : " finalizó con fallas"));
@@ -376,4 +393,5 @@ public abstract class Mision {
     public boolean isExitosa(){
         return exitosa;
     }
+
 }

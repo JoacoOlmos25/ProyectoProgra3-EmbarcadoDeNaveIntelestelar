@@ -33,8 +33,15 @@ public class PreparandoState implements MotorState {
 
     @Override
     public void iniciarWarp() {
-        if (motorWarp.energiaSuficiente())
+        if (motorWarp.energiaSuficiente()) {
             motorWarp.setEstado(new EjecutandoSaltoWarpState(motorWarp));
+        }
+        else {
+            motorWarp.registrarEventoMotor(
+                    "Ignición Warp fallida",
+                    "Energía insuficiente para iniciar el salto Warp."
+            );
+        }
     }
 
     @Override

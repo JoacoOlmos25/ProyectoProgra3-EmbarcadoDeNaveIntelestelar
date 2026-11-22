@@ -93,10 +93,6 @@ public class MotorWarp {
         return estado.motorDisponible();
     }
 
-    public void setBitacora(Bitacora b) {
-        this.bitacora = b;
-    }
-
     public void registrarEventoMotor(String titulo, String msj) {
         if(this.bitacora != null) {
             this.bitacora.agregaEvento(LocalDateTime.now(), titulo, msj);
@@ -113,4 +109,22 @@ public class MotorWarp {
         estado.reiniciarWarp();
     }
 
+    public void saltoNormal(ArrayList<Posicion> ruta,Tablero tablero) {
+        recursos.consumirCombustible(COSTO_SALTO_COMBUSTIBLE);
+        this.mover(tablero, ruta, 1);
+        this.registrarEventoMotor(
+                "Salto Normal ejecutado",
+                "Avance de 1 casillero. Combustible consumido: " + COSTO_SALTO_COMBUSTIBLE
+        );
+    }
+
+    public void setBitacora(Bitacora b) {
+        this.bitacora = b;
+        if (b != null) {
+            this.registrarEventoMotor(
+                    "Motor Warp conectado",
+                    "Motor inicializado. Disponible: " + this.consultaMotorDisponible()
+            );
+        }
+    }
 }
