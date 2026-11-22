@@ -9,6 +9,7 @@ import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 import src.nave.MantenimientoException;
 import src.nave.RecursosInsuficientesException;
+import src.AC.Evento;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -256,27 +257,54 @@ public abstract class Mision {
     }
 
     /**
-     * Interactúa con el elemento de la casilla actual, una única vez por encuentro
+     * Interactúa con el elemento de la casilla actual, una única vez por encuentro.
      * Postcondiciones: si hay un elemento distinto al último con el que se interactuó, se registra el encuentro,
-     *                  se avisa al observador y se interactúa
-     * @throws ColisionException si la interacción deja a la nave en condición crítica
+     *                  se aplica la interacción y se notifica al observador con el resultado efectivo (incluso ante fallo).
+     * @throws ColisionException si la interacción deja a la nave en condición crítica o derrotada
      */
     private void inspeccionarPosicion() throws ColisionException {
         ElementoDelUniverso elemento = tablero.inspeccionarPosicion();
 
-        if (elemento != null && elemento != ultimoElementoInteractuado){
+        if (elemento != null && elemento != ultimoElementoInteractuado) {
             encuentros++;
             Posicion pos = tablero.getPosicionNave();
-            String detalle = "La nave encontró [" + elemento.getClass().getSimpleName()
-                    + "] en (" + pos.getX() + ", " + pos.getY() + ")";
+            String nombreElemento = elemento.getClass().getSimpleName();
+            String ubicacion = "(" + pos.getX() + ", " + pos.getY() + ")";
 
-            ac.registrarEvento("Encuentro", detalle);
-            if (observador != null)
-                observador.interaccionDetectada("INTERACCIÓN DETECTADA", detalle);
+            ac.registrarEvento("Encuentro", "La nave encontró [" + nombreElemento + "] en " + ubicacion);
+            int indiceTrasEncuentro = ac.getEventosBitacora().size();
 
-            ac.inspeccionarPosicionActual(this.tablero);
+            try {
+                ac.inspeccionarPosicionActual(this.tablero);
+                String resultado = extraerResultadoInteraccion(indiceTrasEncuentro);
+                String detalle = "[" + nombreElemento + "] en " + ubicacion
+                        + (resultado.isEmpty() ? "" : " — " + resultado);
+
+                if (observador != null) {
+                    observador.interaccionDetectada("ENCUENTRO: " + nombreElemento.toUpperCase(), detalle);
+                }
+            } catch (ColisionException e) {
+                String detalle = "[" + nombreElemento + "] en " + ubicacion + " — " + e.getMessage();
+                if (observador != null) {
+                    observador.interaccionDetectada("COLISIÓN CRÍTICA: " + nombreElemento.toUpperCase(), detalle);
+                }
+                throw e;
+            }
         }
         ultimoElementoInteractuado = elemento;
+    }
+
+    /**
+     * Recupera el mensaje del evento que el subsistema acaba de registrar tras la interacción.
+     * Precondiciones: indiceInicial >= 0
+     * Postcondiciones: no modifica el estado de la bitácora.
+     */
+    private String extraerResultadoInteraccion(int indiceInicial) {
+        List<Evento> eventos = ac.getEventosBitacora();
+        if (eventos.size() > indiceInicial) {
+            return eventos.get(eventos.size() - 1).getMsj();
+        }
+        return "";
     }
 
     /**
@@ -336,32 +364,33 @@ public abstract class Mision {
      *                  devuelve el informe con el resultado, los turnos, los encuentros, el detalle propio de la misión
      *                  y el estado final de la nave
      */
-    protected void cerrar(){
+    protected void cerrar() {
         try {
             ac.reiniciarMotor();
         } catch (MantenimientoException e) {
             ac.registrarEvento("Motor Warp", "No se pudo completar el enfriamiento: " + e.getMessage());
         }
 
+        int totalSaltos = saltosNormales + saltosWarp;
         StringBuilder informe = new StringBuilder();
         informe.append("Misión: ").append(getNombre()).append("\n");
         informe.append("Resultado: ").append(exitosa ? "EXITOSA" : "FALLIDA").append("\n");
-        if (!exitosa)
+        if (!exitosa) {
             informe.append("Motivo: ").append(motivoFallo).append("\n");
-        if (objetivo != null)
+        }
+        if (objetivo != null) {
             informe.append("Objetivo: (").append(objetivo.getX()).append(", ").append(objetivo.getY()).append(")\n");
-        informe.append("Turnos: ").append(turnos).append(" | Encuentros: ").append(encuentros).append("\n");
-        informe.append(detalleInforme);
-        informe.append("Estado final -> Combustible: ").append(ac.getCombustibleNave())
-                .append(" | Energía: ").append(ac.getEnergiaNave())
-                .append(" | Desgaste: ").append(ac.getDesgasteNave()).append("%\n");
-        informe.append("Motor Warp disponible: ").append(ac.consultaMotorDisp() ? "SÍ" : "NO");
-        int totalSaltos = saltosNormales + saltosWarp;
+        }
         informe.append("Turnos: ").append(turnos)
                 .append(" | Saltos: ").append(totalSaltos)
                 .append(" (Normales: ").append(saltosNormales)
                 .append(", Warp: ").append(saltosWarp).append(")")
                 .append(" | Encuentros: ").append(encuentros).append("\n");
+        informe.append(detalleInforme);
+        informe.append("Estado final -> Combustible: ").append(ac.getCombustibleNave())
+                .append(" | Energía: ").append(ac.getEnergiaNave())
+                .append(" | Desgaste: ").append(ac.getDesgasteNave()).append("%\n");
+        informe.append("Motor Warp disponible: ").append(ac.consultaMotorDisp() ? "SÍ" : "NO");
 
         this.informeFinal = informe.toString();
         ac.registrarEvento("Misión cerrada", getNombre() + (exitosa ? " finalizó con éxito" : " finalizó con fallas"));

@@ -3,10 +3,13 @@ package src.controlador;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import src.AC.Asistente;
+import src.AC.Evento;
 import src.AC.SistemaEstelar;
 import src.Misiones.Mision;
 import src.Misiones.ObservadorMision;
@@ -23,14 +26,14 @@ import src.vista.IVistaPrincipal;
 
 /**
  * Controlador principal de la interfaz de comando (MVC).
- * Además implementa Observador sobre el Tablero para sincronizar automáticamente
- * la telemetría de la nave y el indicador de turno en cada paso de la simulación,
- * y ObservadorMision para recibir la ruta planificada y los encuentros de la misión en curso.
+ * Implementa Observador sobre el Tablero para sincronizar automáticamente
+ * la telemetría de la nave, la bitácora del modelo y el indicador de turno en cada paso,
+ * y ObservadorMision para recibir la ruta planificada y los encuentros con su resultado.
  */
 public class ControladorPrincipal implements ActionListener, Observador, ObservadorMision {
 
-    /** Duración en pantalla del popup de colisión. */
-    private static final int DURACION_POPUP_MS = 2200;
+    /** Duración en pantalla del popup de colisión (ajustada para facilitar la lectura). */
+    private static final int DURACION_POPUP_MS = 3200;
 
     private final IVistaPrincipal vista;
     private final SistemaEstelar modelo;
@@ -39,7 +42,8 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
     private volatile boolean misionEnCurso = false;
     private VentanaVisorUniverso ventanaConcurrencia;
 
-    private int eventosBitacoraSincronizados = 0;
+    /** Cantidad de eventos ya volcados a la vista por cada Asistente/Nave de la flota. */
+    private final Map<Asistente, Integer> eventosSincronizadosPorNave = new IdentityHashMap<>();
 
     public ControladorPrincipal(IVistaPrincipal vista, SistemaEstelar modelo) {
         this.vista = vista;
@@ -51,8 +55,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         this.vista.actualizarPuntoOrigen(tablero.getPosicionNave());
         this.vista.actualizarIndicadorTurno("ESTADO DE TURNO: EN ESPERA DE ÓRDENES", IVistaPrincipal.TURNO_ESPERA);
 
-        // El controlador también observa el Tablero para refrescar recursos e indicador de turno
-        // en cada tick emitido por Mision (nave) o por Destino (universo).
         tablero.agregarObservador(this);
     }
 
@@ -75,7 +77,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
                     IVistaPrincipal.TURNO_NAVE
             );
         } else if (!lower.contains("objetivo")) {
-            // Cualquier otra actualización durante la misión corresponde al turno dinámico de Destino
             vista.actualizarIndicadorTurno(
                     "TURNO ACTIVO: UNIVERSO DINÁMICO (DESTINO)",
                     IVistaPrincipal.TURNO_UNIVERSO
@@ -95,8 +96,9 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
 
     @Override
     public void interaccionDetectada(String titulo, String detalle) {
+        // Sincroniza inmediatamente la telemetría y los eventos que acaba de registrar el modelo
+        refrescarVistaNaveActiva();
         vista.mostrarPopupColision(titulo, detalle, DURACION_POPUP_MS);
-        vista.agregarEntradaBitacora("[ENCUENTRO] " + detalle);
     }
 
     // =========================================================================
@@ -142,11 +144,10 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         }
 
         try {
-            String etiqueta = modelo.crearNave(tipo);
+            modelo.crearNave(tipo);
             vista.actualizarFlota(modelo.getNombresFlota(), modelo.getIndiceActivo());
             refrescarVistaNaveActiva();
             refrescarTableroNaveActiva();
-            vista.agregarEntradaBitacora("[SISTEMA] " + etiqueta + " creada y seleccionada como activa.");
         } catch (IllegalArgumentException ex) {
             vista.mostrarMensajeError("Error al crear nave: " + ex.getMessage());
         }
@@ -155,9 +156,9 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
     private void manejarSeleccionarNave() {
         int indice = vista.getIndiceNaveSeleccionada();
         if (modelo.seleccionarNave(indice)) {
+            vista.agregarEntradaBitacora("--- Cambio de nave activa a: " + modelo.getNombreNaveActiva() + " ---");
             refrescarVistaNaveActiva();
             refrescarTableroNaveActiva();
-            vista.agregarEntradaBitacora("--- Cambio de nave activa a: " + modelo.getNombreNaveActiva() + " ---");
         }
     }
 
@@ -181,9 +182,8 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         }
 
         try {
-            String resumenAlta = modelo.agregarTripulante(cargo, origen, antiguedad, ident);
+            modelo.agregarTripulante(cargo, origen, antiguedad, ident);
             refrescarVistaNaveActiva();
-            vista.agregarEntradaBitacora("[TRIPULACIÓN] Asignado " + resumenAlta);
         } catch (AntiguedadNegativa ex) {
             vista.mostrarMensajeError("La antigüedad no puede ser negativa.");
         } catch (IllegalStateException | NoexisteTripulanteException | IllegalArgumentException ex) {
@@ -195,8 +195,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         try {
             modelo.realizarMantenimiento();
             refrescarVistaNaveActiva();
-            vista.agregarEntradaBitacora("[MANTENIMIENTO] " + modelo.getNombreNaveActiva()
-                    + " restaurada al 0% de desgaste.");
         } catch (IllegalStateException | MantenimientoException ex) {
             vista.mostrarMensajeError(ex.getMessage());
         }
@@ -221,18 +219,14 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         String nombreNave = modelo.getNombreNaveActiva();
 
         vista.actualizarPuntoOrigen(modelo.getTablero().getPosicionNave());
-        vista.actualizarRutaPredefinida(Collections.emptyList()); // la ruta nueva llega por rutaPlanificada(...)
-        modelo.registrarEventoActivo("Inicio de Misión", misionElegida);
-        vista.agregarEntradaBitacora("[MISIÓN] Iniciando " + misionElegida + " con " + nombreNave);
+        vista.actualizarRutaPredefinida(Collections.emptyList());
+        modelo.registrarEventoActivo("Inicio de Misión", misionElegida + " con " + nombreNave);
+        refrescarVistaNaveActiva();
 
-        // Nunca llamar a realizarMision() acá directamente: el Thread.sleep congelaría Swing
         ejecutarMisionEnHilo(misionElegida, mision::realizarMision,
                 () -> "Nave: " + nombreNave + "\n" + mision.getInformeFinal());
     }
 
-    /**
-     * Obtiene el código de misión ("M-01") a partir de la etiqueta del combo ("M-01: Intercepción y Asistencia").
-     */
     private String extraerCodigoMision(String etiqueta) {
         if (etiqueta == null) {
             return "";
@@ -241,10 +235,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         return separador >= 0 ? etiqueta.substring(0, separador) : etiqueta;
     }
 
-    /**
-     * Ejecuta mision.realizarMision() sin congelar Swing
-     * (debido a los Thread.sleep(int) internos del bucle de turnos).
-     */
     private void ejecutarMisionEnHilo(String misionElegida, Runnable ejecucionMision, Supplier<String> proveedorInforme) {
         misionEnCurso = true;
         vista.setControlesOperacionHabilitados(false);
@@ -296,27 +286,27 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
                 ac.consultaReqMantenimiento()
         );
         vista.actualizarListadoTripulantes(modelo.getResumenTripulacionActiva());
-        sincronizarEventosMotorBitacora(ac);
+        sincronizarBitacora(ac);
     }
-    /**
-     * Sincroniza el punto de origen y la ruta del tablero con la nave activa (sin ruta planificada)
-     */
+
     private void refrescarTableroNaveActiva() {
         vista.actualizarPuntoOrigen(modelo.getTablero().getPosicionNave());
         vista.actualizarRutaPredefinida(Collections.emptyList());
     }
 
-    private void sincronizarEventosMotorBitacora(Asistente ac) {
-        List<src.AC.Evento> eventos = ac.getEventosBitacora();
-        while (eventosBitacoraSincronizados < eventos.size()) {
-            src.AC.Evento ev = eventos.get(eventosBitacoraSincronizados);
-            String titulo = ev.getTitulo();
-            String msj = ev.getMsj();
+    /**
+     * Vuelca en la vista todos los eventos nuevos registrados en la Bitácora real de la nave activa,
+     * manteniendo un índice independiente por nave para evitar duplicados o pérdidas al alternar flota.
+     */
+    private synchronized void sincronizarBitacora(Asistente ac) {
+        List<Evento> eventos = ac.getEventosBitacora();
+        int yaSincronizados = eventosSincronizadosPorNave.getOrDefault(ac, 0);
 
-            if (titulo.contains("Motor Warp") || titulo.contains("Salto")) {
-                vista.agregarEntradaBitacora("[MOTOR WARP] " + titulo + ": " + msj);
-            }
-            eventosBitacoraSincronizados++;
+        while (yaSincronizados < eventos.size()) {
+            Evento ev = eventos.get(yaSincronizados);
+            vista.agregarEntradaBitacora("[" + ev.getTitulo().toUpperCase() + "] " + ev.getMsj());
+            yaSincronizados++;
         }
+        eventosSincronizadosPorNave.put(ac, yaSincronizados);
     }
 }

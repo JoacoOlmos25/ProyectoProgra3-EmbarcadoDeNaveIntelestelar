@@ -116,19 +116,52 @@ public abstract class Nave implements Comandable {
         verificarInvariantes();
     }
 
+    /**
+     * Contrato:
+     * Aplica un daño sobre la energía de la nave (ej. impacto de asteroide) y registra el evento en bitácora.
+     * Precondición: cantidad > 0
+     * Postcondición: disminuye la energía en cantidad y registra el impacto; si no alcanza, registra daño crítico.
+     * @throws ColisionException si la nave no tiene energía suficiente para soportar el impacto
+     */
     @Override
     public void recibirDanio(int cantidad) throws ColisionException {
+        assert cantidad > 0 : "El daño recibido debe ser positivo";
         try {
             consumirEnergia(cantidad);
+            registrarEventoNave(
+                    "Daño recibido",
+                    "Impacto recibido: -" + cantidad + " energía (Energía restante: " + this.energia + ")."
+            );
         } catch (RecursosInsuficientesException e) {
-            throw new ColisionException("La nave se quedó sin energía");
+            registrarEventoNave(
+                    "Daño crítico",
+                    "Impacto de -" + cantidad + " energía superó la reserva actual (" + this.energia + "). Nave inoperativa."
+            );
+            throw new ColisionException("La nave se quedó sin energía tras recibir -" + cantidad + " de daño");
         }
     }
 
+    /**
+     * Contrato:
+     * Reabastece combustible y energía sin superar la capacidad máxima y registra los montos efectivos en bitácora.
+     * Precondición: cantidadCombustible >= 0 && cantidadEnergia >= 0
+     * Postcondición: suma hasta el tope máximo de cada recurso y deja asentada la recarga real en bitácora.
+     */
     @Override
     public void recibirAyuda(int cantidadCombustible, int cantidadEnergia) {
-        this.combustible += Math.min(cantidadCombustible, this.capMaxCombustible - this.combustible);
-        this.energia += Math.min(cantidadEnergia, this.capMaxEnergia - this.energia);
+        assert cantidadCombustible >= 0 && cantidadEnergia >= 0 : "Las cantidades de ayuda no pueden ser negativas";
+
+        int combRecibido = Math.min(cantidadCombustible, this.capMaxCombustible - this.combustible);
+        int enerRecibida = Math.min(cantidadEnergia, this.capMaxEnergia - this.energia);
+        this.combustible += combRecibido;
+        this.energia += enerRecibida;
+
+        verificarInvariantes();
+        registrarEventoNave(
+                "Asistencia recibida",
+                "Recarga en estación: +" + combRecibido + " combustible, +" + enerRecibida
+                        + " energía (Actual: " + this.combustible + " comb / " + this.energia + " ener)."
+        );
     }
 
 
@@ -317,8 +350,9 @@ public abstract class Nave implements Comandable {
      */
     protected void perderCombate(String rival) throws ColisionException {
         assert rival != null : "El rival no puede ser nulo";
-        registrarCombate("Combate perdido", "La nave " + getClass().getSimpleName() + " fue derrotada por una nave tipo " + rival);
-        throw new ColisionException("La nave " + getClass().getSimpleName() + " fue derrotada por una nave tipo " + rival);
+        String detalle = "La nave " + getClass().getSimpleName() + " fue derrotada por una nave tipo " + rival;
+        registrarEventoNave("Combate perdido", detalle);
+        throw new ColisionException(detalle);
     }
 
     /**
@@ -329,7 +363,7 @@ public abstract class Nave implements Comandable {
      */
     protected void ganarCombate(String rival) {
         assert rival != null : "El rival no puede ser nulo";
-        registrarCombate("Combate ganado", "La nave " + getClass().getSimpleName() + " derrotó a una nave tipo " + rival);
+        registrarEventoNave("Combate ganado", "La nave " + getClass().getSimpleName() + " derrotó a una nave tipo " + rival);
     }
 
     /**
@@ -340,10 +374,10 @@ public abstract class Nave implements Comandable {
      */
     protected void pactarPaz(String rival) {
         assert rival != null : "El rival no puede ser nulo";
-        registrarCombate("Pacto de paz", "La nave " + getClass().getSimpleName() + " acordó no enfrentarse con una nave tipo " + rival);
+        registrarEventoNave("Pacto de paz", "La nave " + getClass().getSimpleName() + " acordó no enfrentarse con una nave tipo " + rival);
     }
 
-    private void registrarCombate(String titulo, String detalle) {
+    private void registrarEventoNave(String titulo, String detalle) {
         if (this.bitacoraNave != null) {
             this.bitacoraNave.agregaEvento(LocalDateTime.now(), titulo, detalle);
         }

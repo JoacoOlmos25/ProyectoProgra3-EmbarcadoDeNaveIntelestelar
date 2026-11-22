@@ -16,7 +16,7 @@ public class Bitacora {
     public Bitacora() {
     }
 
-    public void agregaEvento(LocalDateTime t, String titulo, String msj) {
+    public synchronized void agregaEvento(LocalDateTime t, String titulo, String msj) {
         assert t != null : "La fecha/hora del evento no puede ser nula";
         assert titulo != null && !titulo.isBlank() : "El título no puede ser nulo o vacío";
         assert msj != null : "El mensaje no puede ser nulo";
@@ -26,13 +26,14 @@ public class Bitacora {
     }
 
     /**
-     * Devuelve una vista de solo lectura de los eventos registrados.
-     * Cualquier intento externo de modificar la lista lanzará UnsupportedOperationException.
+     * Devuelve una instantánea de solo lectura de los eventos registrados hasta el momento.
+     * Precondiciones: ninguna.
+     * Postcondiciones: modificar externamente la lista devuelta lanza UnsupportedOperationException;
+     *                  operación segura ante accesos concurrentes desde otros hilos.
      */
-    public List<Evento> getEventos() {
-        return Collections.unmodifiableList(this.bitacora);
+    public synchronized List<Evento> getEventos() {
+        return Collections.unmodifiableList(new ArrayList<>(this.bitacora));
     }
-
     // Se conserva temporalmente para compatibilidad con el Main de E1
     public void mostrarBitacora() {
         if (bitacora.isEmpty()) {
