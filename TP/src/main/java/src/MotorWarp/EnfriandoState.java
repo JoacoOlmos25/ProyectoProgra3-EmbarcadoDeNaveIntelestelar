@@ -43,10 +43,6 @@ public class EnfriandoState implements MotorState {
     @Override
     public void enfriarWarp() {
         motorWarp.aplicaDesgastePorSalto();
-        motorWarp.registrarEventoMotor(
-                "Enfriamiento de Motor Warp completado",
-                "Desgaste estructural incrementado en " + MotorWarp.COSTO_WARP_DESGASTE + " unidades."
-        );
         motorWarp.setEstado(new DisponibleState(motorWarp));
     }
 

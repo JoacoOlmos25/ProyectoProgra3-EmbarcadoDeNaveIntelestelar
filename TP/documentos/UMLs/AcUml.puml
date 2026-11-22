@@ -1,0 +1,33 @@
+@startuml
+package src.AC {
+    class Asistente {
+        - nave: Nave
+        - bitacora: Bitacora
+        + Asistente(n: Nave)
+        + getCombustibleNave(): int
+        + getEnergiaNave(): int
+        + consultaReqMantenimiento(): boolean
+        + consultaMotorDisp(): boolean
+        + mostrarBitacora()
+        + registrarEvento(titulo: String, msj: String)
+    }
+
+    class Bitacora {
+        - bitacora: ArrayList<Evento>
+        + Bitacora()
+        + agregaEvento(t: LocalDateTime, titulo: String, msj: String)
+        + mostrarBitacora()
+    }
+
+    class Evento {
+        + horario: LocalDateTime
+        + titulo: String
+        + msj: String
+        + Evento(t: LocalDateTime, titulo: String, msj: String)
+        + toString(): String
+    }
+
+    Asistente *-- Bitacora : "Crea y posee"
+    Bitacora *-- Evento : "Contiene"
+}
+@enduml

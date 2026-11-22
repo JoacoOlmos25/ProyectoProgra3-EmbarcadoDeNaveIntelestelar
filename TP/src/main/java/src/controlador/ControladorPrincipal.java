@@ -39,8 +39,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
     private volatile boolean misionEnCurso = false;
     private VentanaVisorUniverso ventanaConcurrencia;
 
-    private int eventosBitacoraSincronizados = 0;
-
     public ControladorPrincipal(IVistaPrincipal vista, SistemaEstelar modelo) {
         this.vista = vista;
         this.modelo = modelo;
@@ -296,7 +294,6 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
                 ac.consultaReqMantenimiento()
         );
         vista.actualizarListadoTripulantes(modelo.getResumenTripulacionActiva());
-        sincronizarEventosMotorBitacora(ac);
     }
     /**
      * Sincroniza el punto de origen y la ruta del tablero con la nave activa (sin ruta planificada)
@@ -306,17 +303,4 @@ public class ControladorPrincipal implements ActionListener, Observador, Observa
         vista.actualizarRutaPredefinida(Collections.emptyList());
     }
 
-    private void sincronizarEventosMotorBitacora(Asistente ac) {
-        List<src.AC.Evento> eventos = ac.getEventosBitacora();
-        while (eventosBitacoraSincronizados < eventos.size()) {
-            src.AC.Evento ev = eventos.get(eventosBitacoraSincronizados);
-            String titulo = ev.getTitulo();
-            String msj = ev.getMsj();
-
-            if (titulo.contains("Motor Warp") || titulo.contains("Salto")) {
-                vista.agregarEntradaBitacora("[MOTOR WARP] " + titulo + ": " + msj);
-            }
-            eventosBitacoraSincronizados++;
-        }
-    }
 }

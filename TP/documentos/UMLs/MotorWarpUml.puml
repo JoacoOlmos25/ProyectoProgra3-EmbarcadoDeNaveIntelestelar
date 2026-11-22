@@ -1,0 +1,36 @@
+@startuml
+package src.MotorWarp {
+    class MotorWarp {
+        - estado: MotorState
+        - bitacora: Bitacora
+        + MotorWarp()
+        + setBitacora(b: Bitacora)
+        + registrarEventoMotor(titulo: String, msj: String)
+        + setEstado(estado: MotorState)
+        + saltoWarp()
+        + cancelarSalto()
+        + consultaMotorDisponible(): boolean
+    }
+
+    interface MotorState <<interface>> {
+        + prepararSalto()
+        + saltar()
+        + finalizarSalto()
+        + hacerDisponible()
+        + cancelarSalto()
+        + motorDisponible(): boolean
+    }
+
+    class DisponibleState implements MotorState
+    class EnfriandoState implements MotorState
+    class EnWarpState implements MotorState
+    class PreparandoState implements MotorState
+
+    MotorWarp *-- MotorState : "estado"
+
+    DisponibleState ..> MotorWarp : "referencia"
+    EnfriandoState ..> MotorWarp : "referencia"
+    EnWarpState ..> MotorWarp : "referencia"
+    PreparandoState ..> MotorWarp : "referencia"
+}
+@enduml
