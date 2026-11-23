@@ -1,6 +1,7 @@
 src\nave\Explorador.class
 src\concurrencia\controlador\ControladorVisor.class
 src\Tripulacion\Capitan.class
+src\Usuario\UsuarioService.class
 src\Tripulacion\Marciano.class
 src\Tripulacion\DecoratorTrip.class
 src\nave\MantenimientoException.class
@@ -27,11 +28,9 @@ src\MotorWarp\TransicionInvalidaException.class
 src\nave\ExcesoRecursoException.class
 src\Tripulacion\TripulanteFactory.class
 src\ElementosDelUniverso\Asteroide.class
-src\vista\MainPruebaVsita.class
 src\vista\IVistaPrincipal.class
 src\destinoytablero\Observable.class
 src\nave\NoexisteTripulanteException.class
-src\concurrencia\MainPruebaVisor.class
 src\concurrencia\modelo\Bateria.class
 src\Tripulacion\Consejero.class
 src\concurrencia\modelo\PlataformaDeCarga.class

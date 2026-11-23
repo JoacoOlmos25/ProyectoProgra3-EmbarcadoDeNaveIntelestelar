@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import src.destinoytablero.Posicion;
 import src.Misiones.Mision;
 import src.Misiones.MisionFactory;
 import src.Tripulacion.AntiguedadNegativa;
 import src.Tripulacion.Tripulante;
 import src.Tripulacion.TripulanteFactory;
 import src.destinoytablero.Destino;
+import src.destinoytablero.Posicion;
 import src.destinoytablero.Tablero;
 import src.nave.MantenimientoException;
 import src.nave.Nave;
@@ -20,6 +20,11 @@ import src.nave.NaveFactory;
  * Modelo de la aplicación (Fachada).
  * Encapsula la flota, la nave activa, las fábricas, el tablero del universo y su destino.
  * Desconoce por completo la existencia de vistas y controladores.
+ *
+ * Invariante de clase:
+ * - tablero != null && destino != null && naveFactory != null && tripulanteFactory != null && misionFactory != null
+ * - flota.size() == nombresFlota.size() && flota.size() == posicionesFlota.size()
+ * - (flota.isEmpty() && indiceActivo == -1) || (!flota.isEmpty() && indiceActivo >= 0 && indiceActivo < flota.size())
  */
 public class SistemaEstelar {
 
@@ -35,7 +40,11 @@ public class SistemaEstelar {
     private final List<Posicion> posicionesFlota;
     private int indiceActivo = -1;
 
-
+    /**
+     * Inicializa el sistema estelar sobre el tablero indicado, sin naves creadas.
+     * Precondiciones: tablero != null
+     * Postcondiciones: la flota inicia vacía (indiceActivo == -1) y se cumple el invariante de clase
+     */
     public SistemaEstelar(Tablero tablero) {
         assert tablero != null : "El tablero no puede ser nulo";
         this.tablero = tablero;
@@ -46,6 +55,18 @@ public class SistemaEstelar {
         this.flota = new ArrayList<>();
         this.nombresFlota = new ArrayList<>();
         this.posicionesFlota = new ArrayList<>();
+
+        assert invariante() : "Invariante de SistemaEstelar violado tras construcción";
+    }
+
+    private boolean invariante() {
+        boolean dependenciasOk = tablero != null && destino != null
+                && naveFactory != null && tripulanteFactory != null && misionFactory != null;
+        boolean listasAlineadas = flota.size() == nombresFlota.size()
+                && flota.size() == posicionesFlota.size();
+        boolean indiceOk = (flota.isEmpty() && indiceActivo == -1)
+                || (!flota.isEmpty() && indiceActivo >= 0 && indiceActivo < flota.size());
+        return dependenciasOk && listasAlineadas && indiceOk;
     }
 
     public Tablero getTablero() {
@@ -54,13 +75,15 @@ public class SistemaEstelar {
 
     /**
      * Crea una nave del tipo indicado, la incorpora a la flota y la deja como activa en la base de origen.
-     * Precondiciones: no hay una misión en curso
+     * Precondiciones: tipo != null && !tipo.isBlank(); no hay una misión en curso
      * Postcondiciones: la nave anterior conserva su posición; la nueva queda activa y ubicada en la base del tablero
      * @param tipo tipo de nave ("Explorador", "Carguero" o "Ataque")
      * @return etiqueta de la nave creada
      * @throws IllegalArgumentException si el tipo de nave es desconocido (la flota no cambia)
      */
     public String crearNave(String tipo) {
+        assert tipo != null && !tipo.isBlank() : "El tipo de nave no puede ser nulo ni vacío";
+
         Nave nuevaNave = naveFactory.crearNave(tipo);
         Asistente nuevoAsistente = new Asistente(nuevaNave);
         String etiqueta = tipo + " #" + (flota.size() + 1);
@@ -73,8 +96,7 @@ public class SistemaEstelar {
         indiceActivo = flota.size() - 1;
         tablero.moverNave(posicionesFlota.get(indiceActivo));
 
-        assert flota.size() == nombresFlota.size() && flota.size() == posicionesFlota.size()
-                : "Las listas de la flota quedaron desalineadas";
+        assert invariante() : "Invariante de SistemaEstelar violado tras crearNave";
         return etiqueta;
     }
 
@@ -93,21 +115,33 @@ public class SistemaEstelar {
         guardarPosicionActiva();
         indiceActivo = indice;
         tablero.moverNave(posicionesFlota.get(indiceActivo));
+
+        assert indiceActivo == indice && tablero.getPosicionNave().equals(posicionesFlota.get(indiceActivo))
+                : "Postcondición violada al seleccionar nave";
+        assert invariante() : "Invariante de SistemaEstelar violado tras seleccionarNave";
         return true;
     }
 
-    /**
-     * Guarda la posición actual del tablero como la última posición conocida de la nave activa
-     * Postcondiciones: si hay nave activa, su posición guardada coincide con la posición de la nave en el tablero
-     */
     private void guardarPosicionActiva() {
         if (hayNaveActiva()) {
             posicionesFlota.set(indiceActivo, tablero.getPosicionNave());
         }
     }
 
+    /**
+     * Crea un tripulante decorado con su origen y lo asigna a la nave activa.
+     * Precondiciones: cargo, origen e ident no son nulos ni vacíos
+     * Postcondiciones: el tripulante queda incorporado a la nave activa y se devuelve un resumen textual
+     * @throws AntiguedadNegativa si antiguedad < 0
+     * @throws IllegalStateException si no hay una nave activa
+     * @throws IllegalArgumentException si la identidad está duplicada, ya hay capitán o cargo/origen son inválidos
+     */
     public String agregarTripulante(String cargo, String origen, int antiguedad, String ident)
             throws AntiguedadNegativa {
+        assert cargo != null && !cargo.isBlank() : "El cargo no puede ser nulo ni vacío";
+        assert origen != null && !origen.isBlank() : "El origen no puede ser nulo ni vacío";
+        assert ident != null && !ident.isBlank() : "La identidad no puede ser nula ni vacía";
+
         Asistente ac = exigirAsistenteActivo();
         Tripulante tripulante = tripulanteFactory.crearTripulante(cargo, origen, antiguedad, ident);
         ac.insertarTripulante(tripulante);
@@ -115,6 +149,13 @@ public class SistemaEstelar {
                 + String.format("%.2f", tripulante.getRemu());
     }
 
+    /**
+     * Solicita el mantenimiento de la nave activa.
+     * Precondiciones: existe una nave activa
+     * Postcondiciones: el desgaste de la nave activa vuelve a 0% y queda registrado en su bitácora
+     * @throws IllegalStateException si no hay una nave activa
+     * @throws MantenimientoException si la nave no requiere mantenimiento (desgaste < 80%)
+     */
     public void realizarMantenimiento() throws MantenimientoException {
         Asistente ac = exigirAsistenteActivo();
         ac.realizarMantenimiento();
@@ -122,7 +163,7 @@ public class SistemaEstelar {
 
     /**
      * Crea la misión indicada para la nave activa, sobre el tablero y el destino del sistema.
-     * Precondiciones: codigo es "M-01", "M-02" o "M-03"
+     * Precondiciones: codigo != null && !codigo.isBlank() ("M-01", "M-02" o "M-03")
      * Postcondiciones: devuelve una misión nueva, todavía no realizada; el estado del sistema no cambia
      * @param codigo código de la misión
      * @return misión lista para invocar realizarMision() desde un hilo secundario
@@ -130,17 +171,23 @@ public class SistemaEstelar {
      * @throws IllegalArgumentException si el código de misión es desconocido
      */
     public Mision crearMision(String codigo) {
+        assert codigo != null && !codigo.isBlank() : "El código de misión no puede ser nulo ni vacío";
         Asistente ac = exigirAsistenteActivo();
         return misionFactory.crearMision(codigo, ac, destino, tablero);
     }
 
+    /**
+     * Registra un evento en la bitácora de la nave activa si existe alguna.
+     * Precondiciones: titulo != null && !titulo.isBlank(), msj != null && !msj.isBlank()
+     * Postcondiciones: si hay nave activa, el evento queda agregado a su bitácora
+     */
     public void registrarEventoActivo(String titulo, String msj) {
+        assert titulo != null && !titulo.isBlank() : "El título del evento no puede ser nulo ni vacío";
+        assert msj != null && !msj.isBlank() : "El mensaje del evento no puede ser nulo ni vacío";
         if (hayNaveActiva()) {
             flota.get(indiceActivo).registrarEvento(titulo, msj);
         }
     }
-
-    // --- Consultas de estado para la capa de presentación (sin exponer colecciones mutables) ---
 
     public boolean hayNaveActiva() {
         return indiceActivo >= 0 && indiceActivo < flota.size();
@@ -175,7 +222,7 @@ public class SistemaEstelar {
                             + " | Salario: $" + String.format("%.2f", t.getRemu())
             );
         }
-        return detalle;
+        return Collections.unmodifiableList(detalle);
     }
 
     private Asistente exigirAsistenteActivo() {

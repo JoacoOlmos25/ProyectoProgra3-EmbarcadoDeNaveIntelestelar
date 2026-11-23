@@ -1,49 +1,109 @@
 @startuml
 skinparam classAttributeIconSize 0
-skinparam nodesep 120
-skinparam ranksep 120
-' Se quitó el linetype ortho para permitir que las líneas esquiven las cajas de los paquetes.
+skinparam nodesep 70
+skinparam ranksep 60
 
-package "Misiones" {
-    abstract class Mision
+package "src.vista" {
+    interface IVistaLogin
+    class VentanaLogin
+    interface IVistaPrincipal
+    class VentanaPrincipal
+    class PanelTablero
+    VentanaLogin ..|> IVistaLogin
+    VentanaPrincipal ..|> IVistaPrincipal
+    VentanaPrincipal *-- PanelTablero
 }
 
-package "AC (Asistente)" {
+package "src.controlador" {
+    class ControladorLogin
+    class ControladorPrincipal
+}
+
+package "src.Usuario (DAO/DTO)" {
+    class UsuarioService
+    interface UsuarioDAO
+    class UsuarioDAOJDBC
+    class UsuarioDTO
+    class ConexionBD
+    UsuarioDAOJDBC ..|> UsuarioDAO
+    UsuarioService --> UsuarioDAO
+    UsuarioDAOJDBC ..> ConexionBD
+    UsuarioService ..> UsuarioDTO
+    UsuarioDAOJDBC ..> UsuarioDTO
+}
+
+package "src.AC (Fachada y Bitácora)" {
+    class SistemaEstelar
     class Asistente
     class Bitacora
+    SistemaEstelar o-- "*" Asistente
+    Asistente *-- Bitacora
 }
 
-package "Nave" {
+package "src.Misiones" {
+    abstract class Mision
+    class MisionFactory
+    interface ObservadorMision
+}
+
+package "src.destinoytablero" {
+    class Tablero
+    class Destino
+    interface Observador
+}
+
+package "src.nave y Elementos" {
+    interface Comandable
     abstract class Nave
+    class NaveFactory
+    interface ElementoDelUniverso
+    Nave ..|> Comandable
 }
 
-package "MotorWarp" {
+package "src.MotorWarp" {
     class MotorWarp
-    interface MotorState <<interface>>
+    interface MotorState
+    MotorWarp *-- MotorState
 }
 
-package "Tripulacion" {
+package "src.Tripulacion" {
     abstract class Tripulante
+    class TripulanteFactory
 }
 
-' Relaciones jerárquicas principales (de arriba hacia abajo)
-Mision o--> Asistente : "ac"
-Asistente *-right-> Bitacora : "Crea (bitacora)"
-Asistente o--> Nave : "Coordina (nave)"
+package "src.concurrencia" {
+    class PlataformaDeCarga
+    class ControladorVisor
+    class VentanaVisorUniverso
+}
 
-Nave *--> MotorWarp : "Compone (motorWarp)"
-Nave o-right-> Tripulante : "Agrega (tripulacion)"
-MotorWarp *-right-> MotorState : "Estado actual"
+ControladorLogin --> IVistaLogin
+ControladorLogin --> UsuarioService
+ControladorPrincipal --> IVistaPrincipal
+ControladorPrincipal --> SistemaEstelar
+ControladorPrincipal ..|> Observador
+ControladorPrincipal ..|> ObservadorMision
+VentanaPrincipal ..|> Observador
 
-' Inyecciones de dependencia de la bitácora hacia arriba
-' Usamos líneas punteadas (.up.>) para que no parezcan herencia o composición
-' y el motor gráfico las dibuje limpiamente por fuera de los paquetes.
-Nave .up.> Bitacora : "Referencia inyectada"
-MotorWarp .up.> Bitacora : "Referencia inyectada"
+SistemaEstelar --> Tablero
+SistemaEstelar --> Destino
+SistemaEstelar --> NaveFactory
+SistemaEstelar --> TripulanteFactory
+SistemaEstelar --> MisionFactory
 
-note left of Asistente
-  El Asistente es el núcleo:
-  1. Instancia la Bitácora.
-  2. La inyecta a la Nave.
-end note
+Mision --> Asistente
+Mision --> Tablero
+Mision --> Destino
+Mision --> ObservadorMision
+
+Asistente o-- Comandable
+Nave *-- MotorWarp
+Nave o-- "*" Tripulante
+Nave ..> Bitacora
+MotorWarp ..> Bitacora
+Tablero o-- "*" ElementoDelUniverso
+
+ControladorPrincipal ..> VentanaVisorUniverso : "abre visor"
+ControladorVisor --> PlataformaDeCarga
+ControladorVisor --> VentanaVisorUniverso
 @enduml

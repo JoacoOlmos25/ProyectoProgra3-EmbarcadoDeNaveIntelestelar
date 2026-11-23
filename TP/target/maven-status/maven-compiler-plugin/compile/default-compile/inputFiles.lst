@@ -3,7 +3,6 @@ D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\AC\Evento.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\AC\SistemaEstelar.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\concurrencia\controlador\ControladorVisor.java
-D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\concurrencia\MainPruebaVisor.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\concurrencia\modelo\Bateria.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\concurrencia\modelo\EstadoEntidad.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\concurrencia\modelo\EstadoEntidadDTO.java
@@ -28,7 +27,6 @@ D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\ElementosDelUniverso\ColisionException.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\ElementosDelUniverso\ElementoDelUniverso.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\ElementosDelUniverso\EstacionDeCarga.java
-D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\main\Main.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\main\MainAplicacion.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Misiones\Mision.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Misiones\Mision_01.java
@@ -76,10 +74,10 @@ D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Usuario\UsuarioDAOJDBC.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Usuario\UsuarioDTO.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Usuario\UsuarioExcepciones.java
+D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\Usuario\UsuarioService.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\DialogoInformeMision.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\IVistaLogin.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\IVistaPrincipal.java
-D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\MainPruebaVsita.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\PanelTablero.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\PopupColision.java
 D:\documentos\Uni_Tomas\Progra C\Tp\ProyectoProgra3-EmbarcadoDeNaveIntelestelar\TP\src\main\java\src\vista\VentanaLogin.java

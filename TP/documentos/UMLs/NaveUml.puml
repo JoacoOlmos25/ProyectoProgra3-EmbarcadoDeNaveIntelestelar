@@ -1,44 +1,95 @@
 @startuml
+skinparam classAttributeIconSize 0
+
+package src.ElementosDelUniverso {
+    interface ElementoDelUniverso <<interface>> {
+        + interactuar(colisionado: Colisionable)
+    }
+    interface Colisionable <<interface>> extends ElementoDelUniverso {
+        + recibirDanio(cantidad: int)
+        + recibirAyuda(combustible: int, energia: int)
+        + enfrentadoPorAtaque()
+        + enfrentadoPorCarguero()
+        + enfrentadoPorExplorador()
+    }
+    class Asteroide implements ElementoDelUniverso {
+        - {static} DANIO: int = 20
+        + interactuar(colisionado: Colisionable)
+    }
+    class EstacionDeCarga implements ElementoDelUniverso {
+        - {static} COMBUSTIBLE_OTORGADO: int = 30
+        - {static} ENERGIA_OTORGADA: int = 30
+        + interactuar(colisionado: Colisionable)
+    }
+}
+
 package src.nave {
-    abstract class Nave {
+    interface FuenteDeRecursos <<interface>> {
+        + getCombustible(): int
+        + getEnergia(): int
+        + consumirCombustible(cantidad: int)
+        + consumirEnergia(cantidad: int)
+        + cargarCombustible(cant: int)
+        + cargarEnergia(cant: int)
+    }
+    interface Mantenible <<interface>> {
+        + getDesgaste(): int
+        + incrementaDesgaste(cant: int)
+        + requiereMantenimiento(): boolean
+        + realizarMantenimiento()
+    }
+    interface Comandable <<interface>> extends FuenteDeRecursos, Mantenible, src.ElementosDelUniverso.Colisionable {
+        + setBitacora(b: Bitacora)
+        + consultarMotorDisponible(): boolean
+        + saltar(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + saltarWarp(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + reacondicionamientoTotal()
+        + reiniciarMotor()
+        + insertarTripulante(t: Tripulante)
+        + getTripulacion(): List<Tripulante>
+    }
+
+    abstract class Nave implements Comandable {
         - capMaxCombustible: int = 100
         - capMaxEnergia: int = 100
         - combustible: int
         - energia: int
         - desgaste: int
-        # requiereMantenimiento: boolean
         # tripulacion: ArrayList<Tripulante>
         # motorWarp: MotorWarp
         # bitacoraNave: Bitacora
         + Nave(combInicial: int, eInicial: int)
-        + setBitacora(b: Bitacora)
-        + insertarTripulante(t: Tripulante)
-        + consumirCombustible(cantidad: int)
-        + consumirEnergia(cantidad: int)
-        + realizaMantenimiento()
-        + consultaReqMantenimiento(): boolean
-        + consultaMotorDisponible(): boolean
-        + incrementaDesgaste(cant: int)
-        + cargaCombustible(cant: int)
-        + cargaEnergia(cant: int)
+        # perderCombate(rival: String)
+        # ganarCombate(rival: String)
+        # pactarPaz(rival: String)
     }
 
     class Ataque extends Nave {
         + Ataque()
+        + interactuar(colisionado: Colisionable)
+        + enfrentadoPorAtaque()
+        + enfrentadoPorCarguero()
+        + enfrentadoPorExplorador()
     }
-
     class Carguero extends Nave {
         + Carguero()
+        + interactuar(colisionado: Colisionable)
+        + enfrentadoPorAtaque()
+        + enfrentadoPorCarguero()
+        + enfrentadoPorExplorador()
     }
-
     class Explorador extends Nave {
         + Explorador()
+        + interactuar(colisionado: Colisionable)
+        + enfrentadoPorAtaque()
+        + enfrentadoPorCarguero()
+        + enfrentadoPorExplorador()
     }
 
     class NaveFactory {
         + crearNave(tipo: String): Nave
     }
 
-    NaveFactory ..> Nave : "Instancia"
+    NaveFactory ..> Nave : "instancia"
 }
 @enduml

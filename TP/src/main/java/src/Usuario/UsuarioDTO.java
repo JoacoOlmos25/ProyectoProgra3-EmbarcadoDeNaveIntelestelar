@@ -1,10 +1,15 @@
 package src.Usuario;
 
+import java.io.Serializable;
+
 /**
  * Objeto de Transferencia de Datos (DTO) que encapsula las credenciales de un operador
- * para transportarlas entre la capa de presentación, el controlador y el DAO.
+ * para transportarlas entre la capa de servicios y el DAO.
+ *
+ * <p><b>Invariante de clase:</b> {@code username != null && password != null}.</p>
  */
-public class UsuarioDTO {
+public class UsuarioDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final String username;
     private final String password;
@@ -25,26 +30,10 @@ public class UsuarioDTO {
         this.password = password;
     }
 
-    /**
-     * Devuelve el nombre de usuario almacenado en el DTO.
-     * <p><b>Precondiciones:</b> ninguna.</p>
-     * <p><b>Postcondiciones:</b> devuelve el identificador del usuario sin modificar el estado del objeto.</p>
-     * <p><b>Excepciones declaradas:</b> ninguna.</p>
-     *
-     * @return nombre de usuario
-     */
     public String getUsername() {
         return username;
     }
 
-    /**
-     * Devuelve la contraseña almacenada en el DTO.
-     * <p><b>Precondiciones:</b> ninguna.</p>
-     * <p><b>Postcondiciones:</b> devuelve la clave de acceso sin modificar el estado del objeto.</p>
-     * <p><b>Excepciones declaradas:</b> ninguna.</p>
-     *
-     * @return contraseña del usuario
-     */
     public String getPassword() {
         return password;
     }

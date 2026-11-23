@@ -1,4 +1,6 @@
 @startuml
+skinparam classAttributeIconSize 0
+
 package src.Tripulacion {
     abstract class Tripulante {
         # ident: String
@@ -6,29 +8,60 @@ package src.Tripulacion {
         + getIdent(): String
         + getAntiguedad(): int
         + setAntiguedad(antiguedad: int)
+        + esCapitan(): boolean
+        + equals(obj: Object): boolean
+        + hashCode(): int
         + {abstract} getRemu(): double
         + {abstract} toString(): String
     }
 
-    class Alferez extends Tripulante
-    class Capitan extends Tripulante
-    class Consejero extends Tripulante
-    class Teniente extends Tripulante
+    class Alferez extends Tripulante {
+        - base: double = 200
+        + getRemu(): double
+    }
+    class Capitan extends Tripulante {
+        - base: double = 1000
+        + esCapitan(): boolean
+        + getRemu(): double
+    }
+    class Consejero extends Tripulante {
+        - base: double = 600
+        - cantConsejos: int
+        + nuevoConsejos(): void
+        + getRemu(): double
+    }
+    class Teniente extends Tripulante {
+        - base: double = 400
+        + getRemu(): double
+    }
 
     abstract class DecoratorTrip extends Tripulante {
-        + DecoratorTrip()
+        # tripu: Tripulante
+        + DecoratorTrip(tripu: Tripulante)
+        + getIdent(): String
+        + getAntiguedad(): int
+        + setAntiguedad(antiguedad: int)
+        + esCapitan(): boolean
     }
 
     class Marciano extends DecoratorTrip {
-        - tripu: Tripulante
+        - {static} SUBSIDIO: int = 18
+        + getRemu(): double
     }
     class Terricola extends DecoratorTrip {
-        - tripu: Tripulante
+        - {static} SUBSIDIO: int = 20
+        + getRemu(): double
     }
     class Vulcano extends DecoratorTrip {
-        - tripu: Tripulante
+        - {static} SUBSIDIO: int = 30
+        + getRemu(): double
     }
 
-    DecoratorTrip o-- Tripulante : "Decora a"
+    class TripulanteFactory {
+        + crearTripulante(cargo: String, origen: String, antiguedad: int, ident: String): Tripulante
+    }
+
+    DecoratorTrip o-- "1" Tripulante : "decora a"
+    TripulanteFactory ..> Tripulante : "instancia y decora"
 }
 @enduml

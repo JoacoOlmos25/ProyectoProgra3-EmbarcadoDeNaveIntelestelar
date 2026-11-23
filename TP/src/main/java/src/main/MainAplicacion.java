@@ -15,6 +15,7 @@ import src.Usuario.UsuarioDAO;
 import src.Usuario.UsuarioDAOJDBC;
 import src.vista.VentanaLogin;
 import src.vista.VentanaPrincipal;
+import src.Usuario.UsuarioService;
 
 public class MainAplicacion {
     /* Cantidad de filas del tablero inicial. */
@@ -25,15 +26,20 @@ public class MainAplicacion {
     private static final int CANT_ASTEROIDES = 4;
     /* Cantidad de estaciones de carga que se distribuyen en el tablero inicial. */
     private static final int CANT_ESTACIONES = 2;
-    /** Tipos de naves enemigas que se distribuyen en el tablero inicial (una de cada uno). */
-    private static final String[] TIPOS_NAVES_ENEMIGAS = { "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque", "Ataque"};
+    /** Tipos de naves enemigas que se distribuyen en el tablero inicial (dos de cada tipo). */
+    private static final String[] TIPOS_NAVES_ENEMIGAS = {
+            "Ataque", "Ataque",
+            "Carguero", "Carguero",
+            "Explorador", "Explorador"
+    };
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            UsuarioDAO usuario = new UsuarioDAOJDBC();
+            UsuarioDAO usuarioDAO = new UsuarioDAOJDBC();
+            UsuarioService usuarioService = new UsuarioService(usuarioDAO);
             VentanaLogin ventanaLogin = new VentanaLogin();
 
-            new ControladorLogin(ventanaLogin, usuario, operadorLogueado -> {
+            new ControladorLogin(ventanaLogin, usuarioService, operadorLogueado -> {
                 iniciarSistemaPrincipal(operadorLogueado);
             });
 

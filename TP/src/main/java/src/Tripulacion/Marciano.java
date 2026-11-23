@@ -1,32 +1,34 @@
 package src.Tripulacion;
 
 public class Marciano extends DecoratorTrip {
-    /**Contrato
-        *Este es para un tripulante con cargo le asigna como origen Marciano
-        *Precondiciones
-            *Debe exister un cargo para el tripulante (no puede ser null)
-        *PostCondiciones
-            *Debe devolver el tripulante junto con su origen Marciano
-     */
 
-    public Marciano(Tripulante tripu){
+    private static final int SUBSIDIO = 18;
+
+    /**
+     * Contrato:
+     * Asigna el origen Marciano a un tripulante existente.
+     * Precondición: tripu != null
+     * Postcondición: el tripulante queda decorado con el origen Marciano y su subsidio mensual.
+     */
+    public Marciano(Tripulante tripu) {
         super(tripu);
     }
 
-    /**Contrato
-        *Le agrega 18 por ser de origen Marciano a la liquidacion de haberes
-        *Precondicion
-            *Trae segun su carga la liquidacion de haberes(positiva)
-        *Postcondicion
-            *Devuelve la liquidacion de haberes total
-    */
-
-    public double getRemu(){
-        return tripu.getRemu()+18;
+    /**
+     * Contrato:
+     * Suma el subsidio mensual por origen Marciano (18) a la remuneración base.
+     * Precondición: tripu.getRemu() > 0
+     * Postcondición: retorna tripu.getRemu() + SUBSIDIO (> 0)
+     */
+    @Override
+    public double getRemu() {
+        double total = tripu.getRemu() + SUBSIDIO;
+        assert total > 0 : "Postcondición violada: remuneración decorada debe ser positiva";
+        return total;
     }
 
     @Override
     public String toString() {
-        return tripu.toString() + ", origen= Marciano, subsidio mensual=" + 18 ;
+        return tripu.toString() + ", origen= Marciano, subsidio mensual=" + SUBSIDIO;
     }
 }

@@ -32,23 +32,15 @@ public final class ConexionBD {
         try {
             Connection conexion = DriverManager.getConnection(URL_SQLITE);
             inicializarTabla(conexion);
+            assert conexion != null && !conexion.isClosed() : "Postcondición violada: la conexión debe devolverse abierta";
             return conexion;
         } catch (SQLException e) {
             throw new UsuarioExcepciones("No se pudo conectar con la base de datos de usuarios: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Crea la tabla {@code usuarios} en caso de que no exista en la base de datos.
-     * <p><b>Precondiciones:</b> {@code conexion != null} y debe estar abierta.</p>
-     * <p><b>Postcondiciones:</b> la tabla {@code usuarios} queda disponible en la base de datos.</p>
-     * <p><b>Excepciones declaradas:</b> {@link SQLException} si falla la ejecución de la sentencia DDL.</p>
-     *
-     * @param conexion conexión activa sobre la cual ejecutar la sentencia
-     * @throws SQLException si ocurre un error SQL al crear la tabla
-     */
     private static void inicializarTabla(Connection conexion) throws SQLException {
-        assert conexion != null : "La conexión no puede ser nula";
+        assert conexion != null && !conexion.isClosed() : "La conexión debe estar abierta y no ser nula";
         String sql = "CREATE TABLE IF NOT EXISTS usuarios ("
                 + "username TEXT PRIMARY KEY, "
                 + "password TEXT NOT NULL"

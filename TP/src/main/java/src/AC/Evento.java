@@ -3,24 +3,40 @@ package src.AC;
 import java.time.LocalDateTime;
 
 /**
- * Clase evento es para crear un registro dde cada suceso de la nave o que afecta a la misma.
- * Invariantes de Clase:
- *  titulo!="" AND titulo!=null
- *  msj!="" AND msj!=null
- *  por lo tanto un evento no puede ser nulo o vacio
- *  el horario producto de la libreria LocalDateTime devolvera la hora actual del dispositivo
- *  con el formato 2026-10-11T15:50:34.123456789
- **/
+ * Representa un registro inmutable de un suceso ocurrido en la nave o su entorno.
+ *
+ * Invariante de clase:
+ * - horario != null
+ * - titulo != null && !titulo.isBlank()
+ * - msj != null && !msj.isBlank()
+ */
 public class Evento {
 
     private final LocalDateTime horario;
     private final String titulo;
     private final String msj;
 
-    public Evento(LocalDateTime t,String titulo,String msj){
+    /**
+     * Crea un evento inmutable de bitácora.
+     * Precondiciones: t != null, titulo != null && !titulo.isBlank(), msj != null && !msj.isBlank()
+     * Postcondiciones: el evento queda construido cumpliendo el invariante de clase
+     */
+    public Evento(LocalDateTime t, String titulo, String msj) {
+        assert t != null : "La fecha/hora del evento no puede ser nula";
+        assert titulo != null && !titulo.isBlank() : "El título del evento no puede ser nulo ni vacío";
+        assert msj != null && !msj.isBlank() : "El mensaje del evento no puede ser nulo ni vacío";
+
         this.horario = t;
         this.titulo = titulo;
         this.msj = msj;
+
+        assert invariante() : "Invariante de Evento violado tras construcción";
+    }
+
+    private boolean invariante() {
+        return horario != null
+                && titulo != null && !titulo.isBlank()
+                && msj != null && !msj.isBlank();
     }
 
     public LocalDateTime getHorario() {
@@ -37,6 +53,6 @@ public class Evento {
 
     @Override
     public String toString() {
-        return "Evento{" + "horario=" + horario + ", titulo='" + titulo + '\'' + ", msj='" + msj + '\'' + "}\n";}
+        return "Evento{" + "horario=" + horario + ", titulo='" + titulo + '\'' + ", msj='" + msj + '\'' + "}\n";
+    }
 }
-

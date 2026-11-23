@@ -1,21 +1,60 @@
 @startuml
+skinparam classAttributeIconSize 0
+
 package src.Misiones {
-    abstract class Mision {
-        # combNecesario: int
-        # energiaNecesaria: int
-        # desgasteEsperado: int
-        # ac: Asistente
-        + Mision(combustible: int, energia: int, desgaste: int, asistente: Asistente)
-        + realizarMision()
-        # preparar()
-        # {abstract} ejecutar()
-        # {abstract} evaluarResultado()
-        # {abstract} cerrar()
-        # informe()
+    interface ObservadorMision <<interface>> {
+        + rutaPlanificada(ruta: List<Posicion>)
+        + interaccionDetectada(titulo: String, detalle: String)
     }
 
-    class Mision_01 extends Mision
-    class Mision_02 extends Mision
-    class Mision_03 extends Mision
+    abstract class Mision {
+        # combustibleBase: int
+        # energiaBase: int
+        # desgasteBase: int
+        # ac: Asistente
+        # destino: Destino
+        # tablero: Tablero
+        # objetivo: Posicion
+        # ruta: ArrayList<Posicion>
+        - observador: ObservadorMision
+        - informeFinal: String
+        - exitosa: boolean
+        + Mision(comb: int, ener: int, desg: int, ac: Asistente, dest: Destino, tab: Tablero)
+        + setObservador(obs: ObservadorMision)
+        + {final} realizarMision()
+        # preparar()
+        # definirObjetivo(): Posicion
+        # {final} ejecutar()
+        # {abstract} evaluarResultado()
+        # {abstract} getNombre(): String
+        # cerrar()
+        + getRutaPlanificada(): List<Posicion>
+        + getInformeFinal(): String
+        + isExitosa(): boolean
+    }
+
+    class Mision_01 extends Mision {
+        - combustibleTransferido: int
+        - energiaTransferida: int
+        # evaluarResultado()
+        # getNombre(): String
+    }
+    class Mision_02 extends Mision {
+        - gemasRecolectadas: int
+        # evaluarResultado()
+        # getNombre(): String
+    }
+    class Mision_03 extends Mision {
+        # definirObjetivo(): Posicion
+        # evaluarResultado()
+        # getNombre(): String
+    }
+
+    class MisionFactory {
+        + crearMision(codigo: String, ac: Asistente, dest: Destino, tab: Tablero): Mision
+    }
+
+    Mision --> "0..1" ObservadorMision : "notifica"
+    MisionFactory ..> Mision : "instancia"
 }
 @enduml

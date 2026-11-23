@@ -1,32 +1,34 @@
 package src.Tripulacion;
 
 public class Vulcano extends DecoratorTrip {
-    /**Contrato
-        *Este es para un tripulante con cargo le asigna como origen Vulcano
-        *Precondiciones
-            *Debe exister un cargo para el tripulante (no puede ser null)
-        *PostCondiciones
-            *Debe devolver el tripulante junto con su origen Vulcano
-     */
 
-    public Vulcano(Tripulante tripu){
+    private static final int SUBSIDIO = 30;
+
+    /**
+     * Contrato:
+     * Asigna el origen Vulcano a un tripulante existente.
+     * Precondición: tripu != null
+     * Postcondición: el tripulante queda decorado con el origen Vulcano y su subsidio mensual.
+     */
+    public Vulcano(Tripulante tripu) {
         super(tripu);
     }
 
-    /**Contrato
-        *Le agrega 30 por ser de origen Vulcano a la liquidacion de haberes
-        *Precondicion
-            *Trae segun su carga la liquidacion de haberes(positiva)
-        *Postcondicion
-            *Devuelve la liquidacion de haberes total
+    /**
+     * Contrato:
+     * Suma el subsidio mensual por origen Vulcano (30) a la remuneración base.
+     * Precondición: tripu.getRemu() > 0
+     * Postcondición: retorna tripu.getRemu() + SUBSIDIO (> 0)
      */
-
-    public double getRemu(){
-        return tripu.getRemu()+ 30;
+    @Override
+    public double getRemu() {
+        double total = tripu.getRemu() + SUBSIDIO;
+        assert total > 0 : "Postcondición violada: remuneración decorada debe ser positiva";
+        return total;
     }
 
     @Override
     public String toString() {
-        return tripu.toString() + ", origen= Vulcano, subsidio mensual=" + 30;
+        return tripu.toString() + ", origen= Vulcano, subsidio mensual=" + SUBSIDIO;
     }
 }

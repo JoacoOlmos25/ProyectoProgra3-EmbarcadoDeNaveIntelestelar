@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Implementación JDBC sobre SQLite del patrón DAO para el acceso y registro
- * de credenciales de usuarios.
+ * Implementación JDBC sobre SQLite del patrón DAO para credenciales de usuarios.
+ * Todas las conexiones y recursos JDBC se abren y cierran exclusivamente dentro de cada método.
  */
 public class UsuarioDAOJDBC implements UsuarioDAO {
 
@@ -19,10 +19,6 @@ public class UsuarioDAOJDBC implements UsuarioDAO {
         assert usuario != null : "El DTO de usuario no puede ser nulo";
         assert !usuario.getUsername().isBlank() && !usuario.getPassword().isBlank()
                 : "El usuario y la contraseña no pueden estar vacíos";
-
-        if (existeUsuario(usuario.getUsername())) {
-            throw new UsuarioExcepciones("El nombre de usuario '" + usuario.getUsername() + "' ya se encuentra registrado.");
-        }
 
         String sql = "INSERT INTO usuarios (username, password) VALUES (?, ?)";
         try (Connection conn = ConexionBD.obtenerConexion();
@@ -39,19 +35,21 @@ public class UsuarioDAOJDBC implements UsuarioDAO {
      * {@inheritDoc}
      */
     @Override
-    public boolean autenticar(UsuarioDTO usuario) throws UsuarioExcepciones {
-        assert usuario != null : "El DTO de usuario no puede ser nulo";
+    public UsuarioDTO buscarPorUsername(String username) throws UsuarioExcepciones {
+        assert username != null && !username.isBlank() : "El nombre de usuario no puede ser nulo ni vacío";
 
-        String sql = "SELECT 1 FROM usuarios WHERE username = ? AND password = ?";
+        String sql = "SELECT username, password FROM usuarios WHERE username = ?";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, usuario.getUsername());
-            ps.setString(2, usuario.getPassword());
+            ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                if (rs.next()) {
+                    return new UsuarioDTO(rs.getString("username"), rs.getString("password"));
+                }
+                return null;
             }
         } catch (SQLException e) {
-            throw new UsuarioExcepciones("Error al validar credenciales: " + e.getMessage(), e);
+            throw new UsuarioExcepciones("Error al buscar el usuario en la base de datos: " + e.getMessage(), e);
         }
     }
 
@@ -60,7 +58,7 @@ public class UsuarioDAOJDBC implements UsuarioDAO {
      */
     @Override
     public boolean existeUsuario(String username) throws UsuarioExcepciones {
-        assert username != null : "El nombre de usuario no puede ser nulo";
+        assert username != null && !username.isBlank() : "El nombre de usuario no puede ser nulo ni vacío";
 
         String sql = "SELECT 1 FROM usuarios WHERE username = ?";
         try (Connection conn = ConexionBD.obtenerConexion();

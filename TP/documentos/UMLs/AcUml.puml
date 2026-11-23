@@ -1,33 +1,62 @@
 @startuml
+skinparam classAttributeIconSize 0
+
 package src.AC {
+    class SistemaEstelar {
+        - naveFactory: NaveFactory
+        - tripulanteFactory: TripulanteFactory
+        - misionFactory: MisionFactory
+        - tablero: Tablero
+        - destino: Destino
+        - flota: List<Asistente>
+        - nombresFlota: List<String>
+        - posicionesFlota: List<Posicion>
+        - indiceActivo: int
+        + SistemaEstelar(tablero: Tablero)
+        + crearNave(tipo: String): String
+        + seleccionarNave(indice: int): boolean
+        + agregarTripulante(cargo: String, origen: String, ant: int, ident: String): String
+        + realizarMantenimiento()
+        + crearMision(codigo: String): Mision
+        + getAsistenteActivo(): Asistente
+        + getResumenTripulacionActiva(): List<String>
+    }
+
     class Asistente {
-        - nave: Nave
+        - nave: Comandable
         - bitacora: Bitacora
         + Asistente(n: Nave)
-        + getCombustibleNave(): int
-        + getEnergiaNave(): int
-        + consultaReqMantenimiento(): boolean
-        + consultaMotorDisp(): boolean
-        + mostrarBitacora()
+        + movimiento(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + inspeccionarPosicionActual(tablero: Tablero)
+        + despegue(comb: int, ener: int, desg: int)
+        + transferirRecursos(comb: int, ener: int)
+        + reacondicionarNave()
+        + reiniciarMotor()
+        + realizarMantenimiento()
+        + insertarTripulante(t: Tripulante)
+        + getTripulacion(): List<Tripulante>
         + registrarEvento(titulo: String, msj: String)
+        + getEventosBitacora(): List<Evento>
     }
 
     class Bitacora {
-        - bitacora: ArrayList<Evento>
-        + Bitacora()
+        - bitacora: List<Evento>
         + agregaEvento(t: LocalDateTime, titulo: String, msj: String)
-        + mostrarBitacora()
+        + getEventos(): List<Evento>
     }
 
     class Evento {
-        + horario: LocalDateTime
-        + titulo: String
-        + msj: String
+        - horario: LocalDateTime
+        - titulo: String
+        - msj: String
         + Evento(t: LocalDateTime, titulo: String, msj: String)
-        + toString(): String
+        + getHorario(): LocalDateTime
+        + getTitulo(): String
+        + getMsj(): String
     }
 
-    Asistente *-- Bitacora : "Crea y posee"
-    Bitacora *-- Evento : "Contiene"
+    SistemaEstelar o-- "*" Asistente : "flota"
+    Asistente *-- "1" Bitacora : "posee"
+    Bitacora *-- "*" Evento : "contiene"
 }
 @enduml

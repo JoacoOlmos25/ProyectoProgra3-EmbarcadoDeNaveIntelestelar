@@ -7,13 +7,14 @@ package src.Tripulacion;
 public class TripulanteFactory {
 
     /**
-     * Crea un tripulante decorado con su origen.
-     *
-     * Precondiciones:
+     * Contrato:
+     * Instancia un tripulante decorado según el cargo y origen solicitados.
+     * Precondicion:
      * - cargo, origen e ident no son nulos ni vacíos.
-     *
-     * Postcondición:
-     * - Devuelve una instancia válida de Tripulante lista para incorporarse a una Nave.
+     * Postcondicion:
+     * - Devuelve una instancia no nula de Tripulante lista para incorporarse a una Nave.
+     * @throws AntiguedadNegativa si antiguedad < 0
+     * @throws IllegalArgumentException si el cargo o el origen son desconocidos
      */
     public Tripulante crearTripulante(String cargo, String origen, int antiguedad, String ident)
             throws AntiguedadNegativa {
@@ -22,7 +23,10 @@ public class TripulanteFactory {
         assert ident != null && !ident.isBlank() : "La identidad no puede ser nula o vacía";
 
         Tripulante base = crearPorCargo(cargo, antiguedad, ident);
-        return aplicarOrigen(base, origen);
+        Tripulante resultado = aplicarOrigen(base, origen);
+
+        assert resultado != null : "Postcondición violada: la fábrica devolvió un tripulante nulo";
+        return resultado;
     }
 
     private Tripulante crearPorCargo(String cargo, int antiguedad, String ident)

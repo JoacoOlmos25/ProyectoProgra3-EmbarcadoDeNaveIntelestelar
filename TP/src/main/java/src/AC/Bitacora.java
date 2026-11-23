@@ -34,14 +34,4 @@ public class Bitacora {
     public synchronized List<Evento> getEventos() {
         return Collections.unmodifiableList(new ArrayList<>(this.bitacora));
     }
-    // Se conserva temporalmente para compatibilidad con el Main de E1
-    public void mostrarBitacora() {
-        if (bitacora.isEmpty()) {
-            System.out.println("No han ocurrido eventos");
-        } else {
-            for (Evento e : bitacora) {
-                System.out.println(e.toString());
-            }
-        }
-    }
 }

@@ -1,36 +1,50 @@
 @startuml
+skinparam classAttributeIconSize 0
+
 package src.MotorWarp {
     class MotorWarp {
+        + {static} COSTO_WARP_ENERGIA: int = 5
+        + {static} COSTO_WARP_DESGASTE: int = 3
+        + {static} COSTO_SALTO_COMBUSTIBLE: int = 2
         - estado: MotorState
         - bitacora: Bitacora
-        + MotorWarp()
-        + setBitacora(b: Bitacora)
-        + registrarEventoMotor(titulo: String, msj: String)
-        + setEstado(estado: MotorState)
-        + saltoWarp()
-        + cancelarSalto()
+        - recursos: FuenteDeRecursos
+        - estructuraNave: Mantenible
+        + MotorWarp(recursos: FuenteDeRecursos, estructuraNave: Mantenible)
+        + saltar(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + saltarWarp(tablero: Tablero, ruta: ArrayList<Posicion>)
         + consultaMotorDisponible(): boolean
+        + reiniciar()
+        + setBitacora(b: Bitacora)
+        ~ setEstado(estado: MotorState)
+        ~ saltoNormal(tablero: Tablero, ruta: ArrayList<Posicion>)
+        ~ mover(tablero: Tablero, ruta: ArrayList<Posicion>, pasos: int)
+        ~ energiaSuficiente(): boolean
+        ~ consumeEnergiaPorSalto()
+        ~ aplicaDesgastePorSalto()
+        ~ registrarEventoMotor(titulo: String, msj: String)
     }
 
     interface MotorState <<interface>> {
-        + prepararSalto()
-        + saltar()
-        + finalizarSalto()
-        + hacerDisponible()
-        + cancelarSalto()
+        + saltar(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + saltarWarp(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + prepararWarp()
+        + iniciarWarp()
+        + ejecutandoWarp(tablero: Tablero, ruta: ArrayList<Posicion>)
+        + enfriarWarp()
         + motorDisponible(): boolean
+        + reiniciarWarp()
     }
 
     class DisponibleState implements MotorState
-    class EnfriandoState implements MotorState
-    class EnWarpState implements MotorState
     class PreparandoState implements MotorState
+    class EjecutandoSaltoWarpState implements MotorState
+    class EnfriandoState implements MotorState
 
-    MotorWarp *-- MotorState : "estado"
-
-    DisponibleState ..> MotorWarp : "referencia"
-    EnfriandoState ..> MotorWarp : "referencia"
-    EnWarpState ..> MotorWarp : "referencia"
-    PreparandoState ..> MotorWarp : "referencia"
+    MotorWarp *-- "1" MotorState : "estado"
+    DisponibleState --> MotorWarp
+    PreparandoState --> MotorWarp
+    EjecutandoSaltoWarpState --> MotorWarp
+    EnfriandoState --> MotorWarp
 }
 @enduml

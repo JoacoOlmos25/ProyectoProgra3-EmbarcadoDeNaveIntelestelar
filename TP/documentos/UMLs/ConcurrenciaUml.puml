@@ -1,0 +1,72 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package src.concurrencia.modelo {
+    class PlataformaDeCarga {
+        - baterias: List<Bateria>
+        - capacidadMaxima: int
+        - generadoras: List<GeneradoraDeEnergia>
+        - naves: List<NaveConsumidora>
+        + depositar(g: GeneradoraDeEnergia, b: Bateria)
+        + retirar(n: NaveConsumidora): Bateria
+        + crearGeneradora()
+        + crearNaveConsumidora()
+        + registrarEvento(msg: String)
+        + detenerSimulacion()
+    }
+    class GeneradoraDeEnergia {
+        - nombre: String
+        - estado: EstadoEntidad
+        + run()
+        + detener()
+    }
+    class NaveConsumidora {
+        - nombre: String
+        - estado: EstadoEntidad
+        + run()
+        + detener()
+    }
+    class Bateria {
+        - id: int
+    }
+    enum EstadoEntidad {
+        TRABAJANDO
+        SOLICITANDO
+        ESPERANDO
+        OPERANDO
+    }
+    class EventoVisorDTO
+    class EstadoEntidadDTO
+
+    PlataformaDeCarga o-- "*" Bateria
+    PlataformaDeCarga o-- "*" GeneradoraDeEnergia
+    PlataformaDeCarga o-- "*" NaveConsumidora
+    GeneradoraDeEnergia --> PlataformaDeCarga
+    NaveConsumidora --> PlataformaDeCarga
+    EventoVisorDTO *-- "*" EstadoEntidadDTO
+    PlataformaDeCarga ..> EventoVisorDTO : "notifyObservers(dto)"
+}
+
+package src.concurrencia.vista {
+    interface IVistaVisor <<interface>> {
+        + {static} CMD_CREAR_GENERADORA: String
+        + {static} CMD_CREAR_NAVE: String
+        + {static} CMD_DETENER: String
+        + setActionListener(c: ActionListener)
+        + mostrar()
+    }
+    class VentanaVisorUniverso implements IVistaVisor
+    class PanelAnimacionVisor
+    VentanaVisorUniverso *-- PanelAnimacionVisor
+}
+
+package src.concurrencia.controlador {
+    class ControladorVisor {
+        + actionPerformed(e: ActionEvent)
+    }
+}
+
+ControladorVisor --> PlataformaDeCarga
+ControladorVisor --> IVistaVisor
+VentanaVisorUniverso ..> EventoVisorDTO : "update(obs, dto)"
+@enduml

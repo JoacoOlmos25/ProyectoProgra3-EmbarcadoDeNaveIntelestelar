@@ -1,32 +1,34 @@
 package src.Tripulacion;
 
 public class Terricola extends DecoratorTrip {
-    /**Contrato
-        *Este es para un tripulante con cargo le asigna como origen Terricola
-        *Precondiciones
-            *Debe exister un cargo para el tripulante (no puede ser null)
-        *PostCondiciones
-            *Debe devolver el tripulante junto con su origen Terricola
-    */
 
-    public Terricola(Tripulante tripu){
+    private static final int SUBSIDIO = 20;
+
+    /**
+     * Contrato:
+     * Asigna el origen Terrícola a un tripulante existente.
+     * Precondición: tripu != null
+     * Postcondición: el tripulante queda decorado con el origen Terrícola y su subsidio mensual.
+     */
+    public Terricola(Tripulante tripu) {
         super(tripu);
     }
 
-    /**Contrato
-        *Le agrega 20 por ser de origen Terricolas a la liquidacion de haberes
-        *Precondicion
-            *Trae segun su carga la liquidacion de haberes(positiva)
-        *Postcondicion
-            *Devuelve la liquidacion de haberes total
+    /**
+     * Contrato:
+     * Suma el subsidio mensual por origen Terrícola (20) a la remuneración base.
+     * Precondición: tripu.getRemu() > 0
+     * Postcondición: retorna tripu.getRemu() + SUBSIDIO (> 0)
      */
-
-    public double getRemu(){
-        return tripu.getRemu()+20;
+    @Override
+    public double getRemu() {
+        double total = tripu.getRemu() + SUBSIDIO;
+        assert total > 0 : "Postcondición violada: remuneración decorada debe ser positiva";
+        return total;
     }
 
     @Override
     public String toString() {
-        return tripu.toString() + ", origen= Terricola, subsidio mensual=" + 20 ;
+        return tripu.toString() + ", origen= Terricola, subsidio mensual=" + SUBSIDIO;
     }
 }

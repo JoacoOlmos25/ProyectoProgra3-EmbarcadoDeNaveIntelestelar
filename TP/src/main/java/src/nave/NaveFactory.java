@@ -1,24 +1,38 @@
 package src.nave;
 
-import java.util.Locale;
+/**
+ * Fábrica responsable de instanciar las subclases concretas de Nave (Patrón Factory).
+ */
+public class NaveFactory {
 
-public class NaveFactory{
-
-    /**Contrato
-        *Instancia la nave segun cual se requiera
-        *Precondicion
-            *Tipo debe tener el tipo de nave a crear
-        *Postcondicion
-            *Devuelve el tipo de nave creada
+    /**
+     * Contrato:
+     * Instancia la nave según el tipo requerido.
+     * Precondicion:
+     * - tipo != null && !tipo.isBlank()
+     * Postcondicion:
+     * - Devuelve una instancia no nula de Nave correspondiente al tipo solicitado.
+     * @throws IllegalArgumentException si el tipo de nave es desconocido
      */
+    public Nave crearNave(String tipo) {
+        assert tipo != null && !tipo.isBlank() : "El tipo de nave no puede ser nulo ni vacío";
 
-    public Nave crearNave(String tipo){
-        switch (tipo.toLowerCase()){
-            case "ataque": return new Ataque();
-            case "carguero": return new Carguero();
-            case "explorador": return new Explorador();
+        Nave creada;
+        switch (tipo.trim().toLowerCase()) {
+            case "ataque":
+                creada = new Ataque();
+                break;
+            case "carguero":
+                creada = new Carguero();
+                break;
+            case "explorador":
+                creada = new Explorador();
+                break;
             default:
                 throw new IllegalArgumentException("Tipo de nave desconocido: " + tipo);
         }
+
+        assert creada != null : "Postcondición violada: la fábrica devolvió una nave nula";
+        return creada;
     }
 }

@@ -1,0 +1,60 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package src.vista {
+    interface IVistaLogin <<interface>> {
+        + {static} CMD_LOGIN: String
+        + {static} CMD_REGISTRAR: String
+        + setActionListener(c: ActionListener)
+        + getUsername(): String
+        + getPassword(): String
+        + mostrarError(msg: String)
+        + mostrarInfo(msg: String)
+        + limpiarPassword()
+        + mostrar()
+        + cerrar()
+    }
+    class VentanaLogin implements IVistaLogin
+}
+
+package src.controlador {
+    class ControladorLogin {
+        - vista: IVistaLogin
+        - usuarioService: UsuarioService
+        + ControladorLogin(vista: IVistaLogin, service: UsuarioService, callback: Consumer<String>)
+        + actionPerformed(e: ActionEvent)
+    }
+}
+
+package src.Usuario {
+    class UsuarioService {
+        - usuarioDAO: UsuarioDAO
+        + UsuarioService(dao: UsuarioDAO)
+        + registrarUsuario(username: String, password: String)
+        + iniciarSesion(username: String, password: String): UsuarioDTO
+    }
+    interface UsuarioDAO <<interface>> {
+        + registrar(usuario: UsuarioDTO)
+        + buscarPorUsername(username: String): UsuarioDTO
+        + existeUsuario(username: String): boolean
+    }
+    class UsuarioDAOJDBC implements UsuarioDAO
+    class ConexionBD {
+        - {static} URL_SQLITE: String
+        + {static} obtenerConexion(): Connection
+    }
+    class UsuarioDTO {
+        - username: String
+        - password: String
+        + getUsername(): String
+        + getPassword(): String
+    }
+}
+
+ControladorLogin --> IVistaLogin
+ControladorLogin --> UsuarioService
+UsuarioService --> "1" UsuarioDAO : "inyectado por constructor"
+UsuarioService ..> UsuarioDTO : "usa"
+UsuarioDAOJDBC ..> UsuarioDTO : "crea / persiste"
+UsuarioDAOJDBC ..> ConexionBD : "abre/cierra Connection"
+@enduml

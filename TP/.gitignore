@@ -1,0 +1,29 @@
+# Compilados y artefactos de Maven / IntelliJ
+target/
+out/
+*.class
+*.jar
+*.war
+
+# Base de datos local SQLite / H2 (no versionar credenciales locales)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.mv.db
+*.trace.db
+
+# Configuración local de IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# Archivos de sistema operativo
+desktop.ini
+Thumbs.db
+.DS_Store
