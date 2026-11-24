@@ -216,10 +216,11 @@ public class SistemaEstelar {
         List<String> detalle = new ArrayList<>();
         for (Tripulante t : flota.get(indiceActivo).getTripulacion()) {
             detalle.add(
-                    t.getIdent()
-                            + (t.esCapitan() ? " [CAPITÁN]" : "")
-                            + " | Antig: " + t.getAntiguedad() + " años"
-                            + " | Salario: $" + String.format("%.2f", t.getRemu())
+                    "Identidad: " + t.getIdent()
+                            + "\nCargo: " + t.getCargo()
+                            + "\nOrigen: " + t.getOrigen()
+                            + "\nAntigüedad: " + t.getAntiguedad() + " años"
+                            + "\nRemuneración: $" + String.format("%.2f", t.getRemu())
             );
         }
         return Collections.unmodifiableList(detalle);

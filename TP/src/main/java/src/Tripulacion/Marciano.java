@@ -28,6 +28,9 @@ public class Marciano extends DecoratorTrip {
     }
 
     @Override
+    public String getOrigen() { return "Marciano"; }
+
+    @Override
     public String toString() {
         return tripu.toString() + ", origen= Marciano, subsidio mensual=" + SUBSIDIO;
     }

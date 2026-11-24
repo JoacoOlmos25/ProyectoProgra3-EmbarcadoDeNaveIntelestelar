@@ -28,6 +28,9 @@ public class Terricola extends DecoratorTrip {
     }
 
     @Override
+    public String getOrigen() { return "Terrícola"; }
+
+    @Override
     public String toString() {
         return tripu.toString() + ", origen= Terricola, subsidio mensual=" + SUBSIDIO;
     }

@@ -61,6 +61,9 @@ public class Consejero extends Tripulante {
     }
 
     @Override
+    public String getCargo() { return "Consejero"; }
+
+    @Override
     public String toString() {
         return "Tripulante{"
                 + "ident='" + ident + '\''

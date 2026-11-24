@@ -49,6 +49,8 @@ public class Capitan extends Tripulante {
         assert remu > 0 : "Postcondición violada: la remuneración debe ser positiva";
         return remu;
     }
+    @Override
+    public String getCargo() { return "Capitán"; }
 
     @Override
     public String toString() {

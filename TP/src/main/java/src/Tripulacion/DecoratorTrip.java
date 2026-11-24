@@ -47,5 +47,10 @@ public abstract class DecoratorTrip extends Tripulante {
     public abstract double getRemu();
 
     @Override
+    public String getCargo() {
+        return this.tripu.getCargo();
+    }
+
+    @Override
     public abstract String toString();
 }

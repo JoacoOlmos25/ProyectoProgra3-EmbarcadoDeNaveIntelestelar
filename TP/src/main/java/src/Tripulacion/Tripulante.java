@@ -60,6 +60,11 @@ public abstract class Tripulante {
         return false;
     }
 
+    public abstract String getCargo();
+
+    public String getOrigen() {
+        return "Sin especificar";
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

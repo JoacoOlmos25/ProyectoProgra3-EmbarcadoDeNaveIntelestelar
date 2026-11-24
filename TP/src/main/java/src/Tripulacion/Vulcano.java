@@ -28,6 +28,9 @@ public class Vulcano extends DecoratorTrip {
     }
 
     @Override
+    public String getOrigen() { return "Vulcano"; }
+
+    @Override
     public String toString() {
         return tripu.toString() + ", origen= Vulcano, subsidio mensual=" + SUBSIDIO;
     }

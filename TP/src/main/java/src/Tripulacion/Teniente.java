@@ -46,6 +46,9 @@ public class Teniente extends Tripulante {
     }
 
     @Override
+    public String getCargo() { return "Teniente"; }
+
+    @Override
     public String toString() {
         return "Tripulante{"
                 + "ident='" + ident + '\''

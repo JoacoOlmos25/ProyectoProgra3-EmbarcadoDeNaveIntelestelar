@@ -453,7 +453,14 @@ public class VentanaPrincipal extends JFrame implements IVistaPrincipal, Observa
         SwingUtilities.invokeLater(() -> {
             modeloListaTripulantes.clear();
             for (String item : detalleTripulantesConSalario) {
-                modeloListaTripulantes.addElement(item);
+                String seguro = item
+                        .replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;");
+                String html = "<html><div style='padding: 6px 4px;'>"
+                        + seguro.replace("\n", "<br>")
+                        + "</div></html>";
+                modeloListaTripulantes.addElement(html);
             }
         });
     }
